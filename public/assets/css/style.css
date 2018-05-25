@@ -10,6 +10,15 @@
  nav .brand-logo {
    color: #444;
  }
+
+ .g-signin2 {
+  line-height: 2rem;
+  margin-top: 15px
+}
+
+.g-signout2 {
+  display: none
+}
  
  p {
    line-height: 2rem;
