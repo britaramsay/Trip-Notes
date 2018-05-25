@@ -3,4 +3,8 @@ const express = require("express"),
 
 //Import models
 
+router.get('/', (req, res) => {
+      res.render('index', {})
+})
+
 module.exports = router;
