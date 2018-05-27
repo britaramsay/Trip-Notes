@@ -1,9 +1,9 @@
 require('dotenv').config()
 
 var config = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.FIREBASE_PROJECT_ID,
+    apiKey: "AIzaSyBZiXZsjYUKoGS_jO-Fn_O5Ji5onyDOCaw",
+    authDomain: "trip-notes-428fb.firebaseapp.com",
+    projectId: "trip-notes-428fb",
 };
 firebase.initializeApp(config);
 
