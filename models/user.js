@@ -1,7 +1,16 @@
-var orm = require("../config/orm.js");
+module.exports = function (sequelize, DataTypes) {
+    const User = sequelize.define('User', {
+        AuthID: {
+            type: DataTypes.STRING,
+            unique: true,
+            allowNull: false
+        }
+    })
 
-var user = {
-
+    //TODO: relationships
+    User.associate = (models) => {
+        User.hasMany(models.Trip)
+        User.hasMany(models.SavedTrip)
+    }
+    return User
 }
-
-module.exports = user
