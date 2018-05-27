@@ -1,4 +1,4 @@
-require('dotenv').config()
+// require('dotenv').config()
 
 var config = {
     apiKey: "AIzaSyBZiXZsjYUKoGS_jO-Fn_O5Ji5onyDOCaw",
