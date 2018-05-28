@@ -6,12 +6,14 @@ module.exports = function (sequelize, DataTypes) {
             validate: {
                 len: [1]
             }
-        }
+        }, 
+        Order: DataTypes.INTEGER
     })
 
     Note.associate = (models) => {
         Note.belongsTo(models.Checkin)
         Note.belongsTo(models.Photo)
+        Note.belongsToMany(models.Tag, { through: models.NoteTag })
     }
     return Note
 }

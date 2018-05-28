@@ -10,7 +10,7 @@ module.exports = function (sequelize, DataTypes) {
     //TODO: relationships
     User.associate = (models) => {
         User.hasMany(models.Trip)
-        User.hasMany(models.SavedTrip)
+        User.belongsToMany(models.Trip, {through: models.SavedTrip})
     }
     return User
 }

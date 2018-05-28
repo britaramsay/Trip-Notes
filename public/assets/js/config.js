@@ -1,5 +1,3 @@
-// require('dotenv').config()
-
 var config = {
     apiKey: "AIzaSyBZiXZsjYUKoGS_jO-Fn_O5Ji5onyDOCaw",
     authDomain: "trip-notes-428fb.firebaseapp.com",

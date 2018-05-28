@@ -8,9 +8,14 @@ module.exports = function (sequelize, DataTypes) {
                 len: [1],
             }
         }
-    }, {timestamps: false})
+    }, { timestamps: false })
 
-    // TODO: relationships
+    Tag.associate = (models) => {
+        Tag.belongsToMany(models.Trip, { through: models.TripTag })
+        Tag.belongsToMany(models.Checkin, { through: models.CheckinTag })
+        Tag.belongsToMany(models.Note, { through: models.NoteTag })
+        Tag.belongsToMany(models.Photo, { through: models.PhotoTag })
+    }
 
     return Tag
 }

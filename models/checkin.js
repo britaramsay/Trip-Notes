@@ -8,6 +8,7 @@ module.exports = function (sequelize, DataTypes) {
         Checkin.belongsTo(models.Trip)
         Checkin.belongsTo(models.Location)
         Checkin.hasMany(models.Note)
+        Checkin.belongsToMany(models.Tag, {through: models.CheckinTag})
     }
 
     return Checkin

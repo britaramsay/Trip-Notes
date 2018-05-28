@@ -3,13 +3,14 @@ module.exports = function (sequelize, DataTypes) {
         URL: {
             type: DataTypes.STRING,
             allowNull: false
-        }, 
+        },
         Order: DataTypes.INTEGER
     })
 
     Photo.associate = (models) => {
         Photo.belongsTo(models.Checkin)
         Photo.hasMany(models.Note)
+        Photo.belongsToMany(models.Tag, { through: models.PhotoTag })
     }
 
     return Photo
