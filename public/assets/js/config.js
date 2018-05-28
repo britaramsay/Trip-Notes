@@ -13,12 +13,12 @@ function onSignIn(googleUser) {
 
     // Build Firebase credential with the Google ID token.
     var credential = firebase.auth.GoogleAuthProvider.credential(id_token);
-    
+
     // Firebase idtoken
     var idToken = credential.idToken
 
     // Sign in with credential from the Google user.
-    firebase.auth().signInAndRetrieveDataWithCredential(credential).catch(function(error) {
+    firebase.auth().signInAndRetrieveDataWithCredential(credential).catch(function (error) {
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
@@ -32,7 +32,7 @@ function onSignIn(googleUser) {
 
 function signOut() {
     // Signout with firebase
-    firebase.auth().signOut().then(function() {
+    firebase.auth().signOut().then(function () {
         var auth2 = gapi.auth2.getAuthInstance();
 
         // Have to sign out with google too or user will be signed in on reload
@@ -40,13 +40,13 @@ function signOut() {
             console.log('User signed out.');
         });
         // Sign-out successful.
-      }).catch(function(error) {
+    }).catch(function (error) {
         // An error happened.
     });
 }
 
 
-firebase.auth().onAuthStateChanged(function(user) {
+firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
         // Show signout button when signed in
         $('.g-signout2').show()
@@ -59,6 +59,11 @@ firebase.auth().onAuthStateChanged(function(user) {
         var isAnonymous = user.isAnonymous;
         var uid = user.uid;
         var providerData = user.providerData;
+
+        // find or create user
+        $.ajax('/user/' + uid, { typs: 'GET' }).then(function (data) {
+            console.log('data', data)
+        })
 
     } else {
         // User is signed out. Hide signout button
