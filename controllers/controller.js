@@ -3,7 +3,7 @@ const express = require('express'),
     db = require('../models')
 
 router.get('/', (req, res) => {
-    res.render('index', {})
+    res.render('about', {})
 })
 
 // finds or creates user associated with Google Firebase's auth ID
