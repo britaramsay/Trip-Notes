@@ -5,7 +5,7 @@ module.exports = {
     "username": process.env.DB_USER,
     "password": process.env.DB_PASSWORD,
     "database": "tripnotes_db",
-    "port": 8889,
+    // "port": 8889,
     "host": "127.0.0.1",
     "dialect": "mysql"
   },

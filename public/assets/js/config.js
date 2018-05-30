@@ -50,7 +50,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
         // Show signout button when signed in
         $('.g-signout2').show()
-
+        $('#dashboard-btn').show()
         // User is signed in.
         var displayName = user.displayName;
         var email = user.email;
@@ -68,5 +68,6 @@ firebase.auth().onAuthStateChanged(function (user) {
     } else {
         // User is signed out. Hide signout button
         $('.g-signout2').hide()
+        $('#dashboard-btn').hide()
     }
 });

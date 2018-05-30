@@ -13,11 +13,25 @@
                     <!-- Google sign out -->
                     <a href="#" class="g-signout2" onclick="signOut();">Sign out</a>
                 </li>
+                <li>
+                    <a href='/dashboard' id="dashboard-btn">Dashboard</a>
+                </li>
             </ul>
 
-            <ul id="nav-mobile" class="side-nav">
+            <ul id="nav-mobile" class="side-nav hide-on-large-only	">
                 <li>
                     <a href="#">Navbar Link</a>
+                </li>
+                <li>
+                    <!-- Google sign in -->                    
+                    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="light"></div>
+                </li>
+                <li>
+                    <!-- Google sign out -->
+                    <a href="#" class="g-signout2" onclick="signOut();">Sign out</a>
+                </li>
+                <li>
+                    <a href='/dashboard' id="dashboard-btn">Dashboard</a>
                 </li>
             </ul>
             <a href="#" data-activates="nav-mobile" class="button-collapse">

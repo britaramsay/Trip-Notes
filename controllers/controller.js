@@ -6,6 +6,10 @@ router.get('/', (req, res) => {
     res.render('about', {})
 })
 
+router.get('/dashboard', (req, res) => {
+      res.render('index', {})
+})
+
 // finds or creates user associated with Google Firebase's auth ID
 router.get('/user/:uid', (req, res) => {
     db.User.findOrCreate({
