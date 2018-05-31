@@ -9,7 +9,7 @@ module.exports = function (sequelize, DataTypes) {
 
     Photo.associate = (models) => {
         Photo.belongsTo(models.Checkin)
-        Photo.hasMany(models.Note)
+        Photo.hasMany(models.Note, { onDelete: 'CASCADE' })
         Photo.belongsToMany(models.Tag, { through: models.PhotoTag })
     }
 

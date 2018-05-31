@@ -20,7 +20,7 @@ module.exports = function (sequelize, DataTypes) {
     //TODO: relationships
     Trip.assocate = (models) => {
         Trip.belongsTo(models.User)
-        Trip.hasMany(models.Checkin)
+        Trip.hasMany(models.Checkin, { onDelete: 'CASCADE' })
         Trip.belongsToMany(models.Tag, { through: models.TripTag })
         Trip.belongsToMany(models.User, { through: models.SavedTrip })
     }

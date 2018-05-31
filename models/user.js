@@ -9,8 +9,8 @@ module.exports = function (sequelize, DataTypes) {
 
     //TODO: relationships
     User.associate = (models) => {
-        User.hasMany(models.Trip)
-        User.belongsToMany(models.Trip, {through: models.SavedTrip})
+        User.hasMany(models.Trip, { onDelete: 'CASCADE' })
+        User.belongsToMany(models.Trip, { through: models.SavedTrip })
     }
     return User
 }

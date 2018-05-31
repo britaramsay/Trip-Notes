@@ -11,7 +11,7 @@ module.exports = function (sequelize, DataTypes) {
     }, { timestamps: false })
 
     Location.associate = (models) => {
-        Location.hasMany(models.Checkin)
+        Location.hasMany(models.Checkin, { onDelete: 'CASCADE' })
     }
 
     return Location
