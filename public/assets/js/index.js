@@ -1,10 +1,8 @@
-function getLocation(e) {
-    e.preventDefault();
-    var alert = document.getElementById("alert");
+var alert = document.getElementById("alert");
 
+function getLocation() {
     if (navigator.geolocation) {
-        var loca = navigator.geolocation.getCurrentPosition(showPosition);
-        console.log(loca)
+        navigator.geolocation.getCurrentPosition(showPosition);
         
     } else { 
         alert.innerHTML = "Geolocation is not supported by this browser.";
@@ -12,8 +10,35 @@ function getLocation(e) {
 }
 
 function showPosition(position) {
-    var alert = document.getElementById("alert");
+    var user = firebase.auth().currentUser;
+    console.log(user.uid)
+    var location = {
+        lat: position.coords.latitude,
+        long: position.coords.longitude
+    }
+    alert.innerHTML = '<p>'+location.lat+','+location.long+'</p>'
 
-    var location = position.coords.latitude +','+ position.coords.longitude;
-    alert.innerHTML = '<p>'+location+'</p>'
+    $.post('/user', location).then(function() {
+        console.log('hi')
+    })
 }
+
+$('.submit').on('click', function (e) {  
+    e.preventDefault();
+
+    var venue = $('#venue').val().trim()
+    var city = $('#city').val().trim()
+
+    alert.innerHTML = '<p>'+venue+','+city+'</p>'
+
+    // var data = 'limit=1' +
+    //             '&query='+ venue +
+    //             '&near='+ city +
+    //             '&intent=checkin'+
+    //             '&client_id='+ CLIENT_ID +
+    //             '&client_secret='+ CLIENT_SECRET +
+    //             '&v=20180323' +
+    //             '&m=foursquare'
+    
+    // callAPI(data)
+})
