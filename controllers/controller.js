@@ -1,9 +1,7 @@
 const express = require('express'),
       router = express.Router(),
       db = require('../models'),
-      request = require('request'),
-      foursquare = require('node-foursquare-venues')(process.env.CLIENT_ID, process.env.CLIENT_SECRET, '20180323', 'foursquare')
-
+      request = require('request')
 
 router.get('/', (req, res) => {
     res.render('about', {})
@@ -26,7 +24,27 @@ router.get('/user/:uid', (req, res) => {
     })
 })
 
-router.post('/user', (req, res) => {
+router.post('/newtrip', (req, res) => {
+      var userId;
+      db.User.findOne({
+            where: {AuthID: req.body.uid}
+      }).then(user => {
+            userId = user.id
+            db.Trip.create({
+                  UserId: userId,
+                  Title: req.body.title,
+                  Description: req.body.description,
+                  Private: req.body.private
+      
+            }).then(function () {
+                  // res.json(dbPost)
+            })
+      })
+      
+})
+
+// Posts user's current location or venue searched for 
+router.post('/checkin', (req, res) => {
       var qs;
       if(req.body.venue && req.body.city) {
             qs = {
@@ -47,18 +65,17 @@ router.post('/user', (req, res) => {
                   limit: 1
             } 
       }
-      console.log(qs)
       request({
             url: 'https://api.foursquare.com/v2/venues/search',
             method: 'GET',
             qs: qs
       }, function(err, res, body) {
             if (err) {
-              console.error(err);
+                  console.error(err);
             } else {
-
                   var response = JSON.parse(body).response.venues[0];
                   console.log(response)
+
                   db.Location.create({
                         ApiID: response.id,
                         Name: response.name,

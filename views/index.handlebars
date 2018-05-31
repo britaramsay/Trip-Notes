@@ -2,6 +2,31 @@
     <div class="section no-pad-bot">
         <div class="container">
             <div class="row">
+                <!-- Toggle new trip form -->
+                <p>Add a new trip <a id='newtrip-btn' class="btn-floating btn-large waves-effect waves-light red btn-small" href='#'><i class="material-icons">add</i></a></p>
+
+                <!-- New trip form -->
+                <form class="col s12" id='newtrip-form' style='display:none'>
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input id="title" type="text" class="validate">
+                            <label for="title">Title</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="description" type="text" class="validate">
+                            <label for="description">Description</label>
+                        </div>
+                        <div>
+                            <label>
+                                <input id='private' name="private" type="checkbox" class="filled-in"/>
+                                <span>Private</span>
+                            </label>  
+                        </div>
+                        
+                        <button class="btn waves-effect waves-light submit-trip" type="submit" name="submit">Add</button>
+                    </div>
+                </form>
+
                 <p>Check in with Geolocation</p>
 
                 <button class="waves-effect waves-light btn" onclick="getLocation()">Check In</button>

@@ -1,6 +1,23 @@
 var alert = document.getElementById("alert");
 
-function getLocation() {
+$('#newtrip-btn').on('click', function () {  
+    $('#newtrip-form').toggle()
+})
+
+$('#newtrip-form').submit(function (event) {
+    event.preventDefault();
+    var newTrip = {
+        uid: firebase.auth().currentUser.uid,
+        title: $('#title').val().trim(),
+        description: $('#description').val().trim(),
+        private: $('#private').is(":checked")
+    }
+    console.log(newTrip)
+    $.post('/newtrip', newTrip).then(function () {
+    })
+})
+
+function getLocation () {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition);
         
@@ -9,18 +26,15 @@ function getLocation() {
     }
 }
 
-function showPosition(position) {
-    var user = firebase.auth().currentUser;
-    console.log(user.uid)
+function showPosition (position) {
+    // console.log(user.uid)
 
     var location = {
         lat: position.coords.latitude,
         long: position.coords.longitude
     }
-    alert.innerHTML = '<p>'+location.lat+','+location.long+'</p>'
 
-    $.post('/user', location).then(function() {
-        console.log('hi')
+    $.post('/checkin', location).then(function () {
     })
 }
 
@@ -31,9 +45,7 @@ $('.submit').on('click', function (e) {
         venue: $('#venue').val().trim(),
         city: $('#city').val().trim()
     }
-    $.post('/user', location).then(function() {
-        console.log('hi')
+    $.post('/checkin', location).then(function () {
     })
 
-    alert.innerHTML = '<p>'+venue+','+city+'</p>'
 })
