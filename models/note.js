@@ -6,7 +6,7 @@ module.exports = function (sequelize, DataTypes) {
             validate: {
                 len: [1]
             }
-        }, 
+        },
         Order: DataTypes.INTEGER
     })
 
