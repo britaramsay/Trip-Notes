@@ -12,6 +12,7 @@ function getLocation() {
 function showPosition(position) {
     var user = firebase.auth().currentUser;
     console.log(user.uid)
+
     var location = {
         lat: position.coords.latitude,
         long: position.coords.longitude
@@ -26,19 +27,13 @@ function showPosition(position) {
 $('.submit').on('click', function (e) {  
     e.preventDefault();
 
-    var venue = $('#venue').val().trim()
-    var city = $('#city').val().trim()
+    var location = {
+        venue: $('#venue').val().trim(),
+        city: $('#city').val().trim()
+    }
+    $.post('/user', location).then(function() {
+        console.log('hi')
+    })
 
     alert.innerHTML = '<p>'+venue+','+city+'</p>'
-
-    // var data = 'limit=1' +
-    //             '&query='+ venue +
-    //             '&near='+ city +
-    //             '&intent=checkin'+
-    //             '&client_id='+ CLIENT_ID +
-    //             '&client_secret='+ CLIENT_SECRET +
-    //             '&v=20180323' +
-    //             '&m=foursquare'
-    
-    // callAPI(data)
 })
