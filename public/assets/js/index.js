@@ -1,3 +1,8 @@
+$(document).ready(function(){
+    $('.carousel').carousel();
+    
+  });
+
 var alert = document.getElementById("alert");
 
 $('#newtrip-btn').on('click', function () {  
