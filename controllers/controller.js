@@ -21,7 +21,6 @@ router.get('/user/trips/:id', (req, res) => {
                   UserId: req.params.id
             }
       }).then(trips => {
-            console.log(trips)
             var hbsObject = {
                   trips: trips
             }
@@ -47,7 +46,9 @@ router.post('/newtrip', (req, res) => {
       var userId;
       // Find id of user with the requested authId
       db.User.findOne({
-            where: {AuthID: req.body.uid}
+            where: {
+                  AuthID: req.body.uid
+            }
       }).then(user => {
             userId = user.id
             // create new trip
@@ -104,15 +105,15 @@ router.post('/checkin', (req, res) => {
                   var response = JSON.parse(body).response.venues[0];
                   console.log(response)
                   // Create new location
-                  db.Location.create({
-                        ApiID: response.id,
-                        Name: response.name,
-                        Lat: response.location.lat,
-                        Lng: response.location.lng
-                  }).then (location => {
-                        // Get id of new location
-                        var locationId = location.dataValues.id
-                        console.log(locationId)
+                  // db.Location.create({
+                  //       ApiID: response.id,
+                  //       Name: response.name,
+                  //       Lat: response.location.lat,
+                  //       Lng: response.location.lng
+                  // }).then (location => {
+                  //       // Get id of new location
+                  //       var locationId = location.dataValues.id
+                  //       console.log(locationId)
                         // Find trip made by user with the name passed in from user
                         db.Trip.findOne({
                               where: {
@@ -123,7 +124,7 @@ router.post('/checkin', (req, res) => {
                         }).then(trip => {
                               // Get id of selected trip
                               let tripId = trip.dataValues.id
-                              console.log(trip.dataValues.id, locationId)
+                              // console.log(trip.dataValues.id, locationId)
                               // Find all check ins in this trip and order by descending
                               db.Checkin.findAll({
                                     order: [['Order', "DESC"]],
@@ -140,11 +141,21 @@ router.post('/checkin', (req, res) => {
                                     db.Checkin.create({
                                           Order: maxOrder + 1,
                                           TripId: tripId,
-                                          LocationId: locationId
+                                          Location: {
+                                                // locationId
+                                                ApiID: response.id,
+                                                Name: response.name,
+                                                Lat: response.location.lat,
+                                                Lng: response.location.lng
+                                          }
+                                    }, {
+                                          include: [{
+                                                association: db.Checkin.belongsTo(db.Location)
+                                          }]
                                     })
                               })
                         })
-                  })
+                  // })
             }
       });
 })
