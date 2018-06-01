@@ -1,7 +1,40 @@
 const express = require('express'),
       router = express.Router(),
       db = require('../models'),
-      request = require('request')
+      request = require('request'),
+      aws = require('aws-sdk'),
+      S3_BUCKET = process.env.S3_BUCKET;
+
+aws.config.region = 'us-east-2';
+// We will set heroku config variables in the command line when we host it
+router.get('/sign-s3', (req, res) => {
+      const s3 = new aws.S3();
+      const fileName = req.query['file-name'];
+      const fileType = req.query['file-type'];
+      const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+      const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+      const s3Params = {
+            Bucket: S3_BUCKET,
+            Key: fileName,
+            Expires: 60,
+            ContentType: fileType,
+            ACL: 'public-read'
+      };
+      
+      s3.getSignedUrl('putObject', s3Params, (err, data) => {
+            if(err){
+                  console.log(err);
+                  return res.end();
+            }
+            const returnData = {
+                  signedRequest: data,
+                  url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
+            };
+            console.log(returnData)
+            res.write(JSON.stringify(returnData));
+            res.end();
+      });
+});
 
 // Render about page at home route
 router.get('/', (req, res) => {
@@ -15,7 +48,6 @@ router.get('/dashboard', (req, res) => {
 
 // Find all trips made by the current user and render them to trips partial
 router.get('/user/trips/:id', (req, res) => {
-      console.log(req.params.id)
       db.Trip.findAll({
             where: {
                   UserId: req.params.id
@@ -61,7 +93,6 @@ router.post('/newtrip', (req, res) => {
                   res.json(data)
             })
       })
-      
 })
 
 // Posts user's current location or venue searched for 
@@ -103,8 +134,7 @@ router.post('/checkin', (req, res) => {
             } else {
                   // Parse api response
                   var response = JSON.parse(body).response.venues[0];
-                  console.log(response)
-            
+                  // Find trip specified by user
                   db.Trip.findOne({
                         where: {
                               Title: tripName,
@@ -114,7 +144,6 @@ router.post('/checkin', (req, res) => {
                   }).then(trip => {
                         // Get id of selected trip
                         let tripId = trip.dataValues.id
-                        // console.log(trip.dataValues.id, locationId)
                         // Find all check ins in this trip and order by descending
                         db.Checkin.findAll({
                               order: [['Order', "DESC"]],
@@ -141,11 +170,18 @@ router.post('/checkin', (req, res) => {
                                     include: [{
                                           association: db.Checkin.belongsTo(db.Location)
                                     }]
-                              }).then(function (data) {res.json(data)})
+                              }).then(function (data) { res.json(data) })
                         })
                   })
             }
-      });
+      })
+})
+
+router.post('/saveTrip', (req, res) => {
+      db.SavedTrip.create({
+            UserId: req.body.uid,
+            TripId: req.body.trip
+      }).then(function (data) { res.json(data) })
 })
 
 module.exports = router;

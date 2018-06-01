@@ -1,23 +1,33 @@
 $(document).ready(() => {
+    // Initialize carousel
     $('.carousel').carousel();
-
+    // Listen for a file to be uploaded
+    $("#file-input").on('change', () => {
+        const files = document.getElementById('file-input').files;
+        const file = files[0];
+        if(file == null){
+            M.toast({html: 'No file selected'}, 4000)
+        }
+        getSignedRequest(file);
+      }
+    )
 });
 
-var alert = document.getElementById("alert");
-
+// Toggle show/hide new trip form
 $('#newtrip-btn').on('click', function () {  
     $('#newtrip-form').toggle()
 })
 
 $('#newtrip-form').submit(function (event) {
     event.preventDefault();
+
     var newTrip = {
         uid: firebase.auth().currentUser.uid,
         title: $('#title').val().trim(),
         description: $('#description').val().trim(),
         private: $('#private').is(":checked")
     }
-    console.log(newTrip)
+
     $.post('/newtrip', newTrip).then(function (data) {
         M.toast({html: 'Added ' + data.Title + ' to your trips'}, 4000)
     })
@@ -26,15 +36,12 @@ $('#newtrip-form').submit(function (event) {
 function getLocation () {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition);
-        
     } else { 
         M.toast({html: 'Geolocation is not supported by this browser.'}, 4000)
     }
 }
 
 function showPosition (position) {
-    // console.log(user.uid)
-
     var location = {
         lat: position.coords.latitude,
         long: position.coords.longitude
@@ -52,8 +59,48 @@ $('.submit').on('click', function (e) {
         venue: $('#venue').val().trim(),
         city: $('#city').val().trim()
     }
+
     $.post('/checkin', location).then(function (data) {
         M.toast({html: 'Checked into ' + data.Location.Name}, 4000)
     })
-
 })
+
+$('.saveTrip').on('click', function () {  
+    var tripId = $(this).data('id')
+    $.get('/user/' + firebase.auth().currentUser.uid).then(function (data) {
+        $.post('/saveTrip', {
+            trip: tripId, 
+            uid: data.id
+        }, function(response) {
+            M.toast({html: 'Saved ' + response.TripId}, 4000)
+        })
+    })
+})
+
+
+function getSignedRequest(file){
+    const xhr = new XMLHttpRequest();
+
+    xhr.open('GET', `/sign-s3?file-name=${file.name}&file-type=${file.type}`);
+    
+    xhr.onreadystatechange = () => {
+      if(xhr.readyState === 4){
+        if(xhr.status === 200){
+            const response = JSON.parse(xhr.responseText);
+            console.log(response)
+            // Post url to db
+            $.ajax({
+                url: response.signedRequest,
+                type: 'PUT',
+                success: function() {
+                    M.toast({html: 'File uploaded'}, 4000)
+                }
+            });
+        }
+        else{
+          alert('Could not get signed URL.');
+        }
+      }
+    };
+    xhr.send();
+}
