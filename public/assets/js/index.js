@@ -1,7 +1,7 @@
-$(document).ready(function(){
+$(document).ready(() => {
     $('.carousel').carousel();
-    
-  });
+
+});
 
 var alert = document.getElementById("alert");
 
@@ -18,7 +18,8 @@ $('#newtrip-form').submit(function (event) {
         private: $('#private').is(":checked")
     }
     console.log(newTrip)
-    $.post('/newtrip', newTrip).then(function () {
+    $.post('/newtrip', newTrip).then(function (data) {
+        M.toast({html: 'Added ' + data.Title + ' to your trips'}, 4000)
     })
 })
 
@@ -27,7 +28,7 @@ function getLocation () {
         navigator.geolocation.getCurrentPosition(showPosition);
         
     } else { 
-        alert.innerHTML = "Geolocation is not supported by this browser.";
+        M.toast({html: 'Geolocation is not supported by this browser.'}, 4000)
     }
 }
 
@@ -39,7 +40,8 @@ function showPosition (position) {
         long: position.coords.longitude
     }
 
-    $.post('/checkin', location).then(function () {
+    $.post('/checkin', location).then(function (data) {
+        M.toast({html: 'Checked into ' + data.Location.Name}, 4000)
     })
 }
 
@@ -50,7 +52,8 @@ $('.submit').on('click', function (e) {
         venue: $('#venue').val().trim(),
         city: $('#city').val().trim()
     }
-    $.post('/checkin', location).then(function () {
+    $.post('/checkin', location).then(function (data) {
+        M.toast({html: 'Checked into ' + data.Location.Name}, 4000)
     })
 
 })

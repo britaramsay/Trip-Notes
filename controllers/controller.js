@@ -57,8 +57,8 @@ router.post('/newtrip', (req, res) => {
                   Title: req.body.title,
                   Description: req.body.description,
                   Private: req.body.private
-            }).then(function () {
-                  // res.json(dbPost)
+            }).then(function (data) {
+                  res.json(data)
             })
       })
       
@@ -97,65 +97,53 @@ router.post('/checkin', (req, res) => {
             url: 'https://api.foursquare.com/v2/venues/search',
             method: 'GET',
             qs: qs
-      }, function(err, res, body) {
+      }, function(err, resp, body) {
             if (err) {
                   console.error(err);
             } else {
                   // Parse api response
                   var response = JSON.parse(body).response.venues[0];
                   console.log(response)
-                  // Create new location
-                  // db.Location.create({
-                  //       ApiID: response.id,
-                  //       Name: response.name,
-                  //       Lat: response.location.lat,
-                  //       Lng: response.location.lng
-                  // }).then (location => {
-                  //       // Get id of new location
-                  //       var locationId = location.dataValues.id
-                  //       console.log(locationId)
-                        // Find trip made by user with the name passed in from user
-                        db.Trip.findOne({
+            
+                  db.Trip.findOne({
+                        where: {
+                              Title: tripName,
+                              // Get user id
+                              UserId: 1
+                        }
+                  }).then(trip => {
+                        // Get id of selected trip
+                        let tripId = trip.dataValues.id
+                        // console.log(trip.dataValues.id, locationId)
+                        // Find all check ins in this trip and order by descending
+                        db.Checkin.findAll({
+                              order: [['Order', "DESC"]],
                               where: {
-                                    Title: tripName,
-                                    // Get user id
-                                    UserId: 1
+                                    TripId: tripId
                               }
-                        }).then(trip => {
-                              // Get id of selected trip
-                              let tripId = trip.dataValues.id
-                              // console.log(trip.dataValues.id, locationId)
-                              // Find all check ins in this trip and order by descending
-                              db.Checkin.findAll({
-                                    order: [['Order', "DESC"]],
-                                    where: {
-                                          TripId: tripId
+                        }).then(data => {
+                              var maxOrder;
+                              // If there are no checkins, set max order to 0
+                              if(data.length == 0) maxOrder = 0;
+                              // Otherwise set to Order value of first checkin in response (latest checkin)
+                              else maxOrder = data[0].dataValues.Order
+                              // Create a checkin with the next highest order number
+                              db.Checkin.create({
+                                    Order: maxOrder + 1,
+                                    TripId: tripId,
+                                    Location: {
+                                          ApiID: response.id,
+                                          Name: response.name,
+                                          Lat: response.location.lat,
+                                          Lng: response.location.lng
                                     }
-                              }).then(data => {
-                                    var maxOrder;
-                                    // If there are no checkins, set max order to 0
-                                    if(data.length == 0) maxOrder = 0;
-                                    // Otherwise set to Order value of first checkin in response (latest checkin)
-                                    else maxOrder = data[0].dataValues.Order
-                                    // Create a checkin with the next highest order number
-                                    db.Checkin.create({
-                                          Order: maxOrder + 1,
-                                          TripId: tripId,
-                                          Location: {
-                                                // locationId
-                                                ApiID: response.id,
-                                                Name: response.name,
-                                                Lat: response.location.lat,
-                                                Lng: response.location.lng
-                                          }
-                                    }, {
-                                          include: [{
-                                                association: db.Checkin.belongsTo(db.Location)
-                                          }]
-                                    })
-                              })
+                              }, {
+                                    include: [{
+                                          association: db.Checkin.belongsTo(db.Location)
+                                    }]
+                              }).then(function (data) {res.json(data)})
                         })
-                  // })
+                  })
             }
       });
 })
