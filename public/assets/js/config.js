@@ -61,10 +61,9 @@ firebase.auth().onAuthStateChanged(function (user) {
         var providerData = user.providerData;
 
         // find or create user
-        $.ajax('/user/' + uid, { typs: 'GET' }).then(function (data) {
+        $.ajax('/user/' + uid, { type: 'GET' }).then(function (data) {
             console.log('data', data)
         })
-
     } else {
         // User is signed out. Hide signout button
         $('.g-signout2').hide()

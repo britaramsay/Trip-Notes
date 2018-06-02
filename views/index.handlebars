@@ -58,6 +58,13 @@
                 <p id="status">Please select a file</p>
                
             </div>
+
+            <h2 class="red-text">Trips</h2>
+            <div class="row" id="trips">
+                {{#each trips}}
+                    {{> tripsummary}}
+                {{/each}}
+            </div>
         </div>
     </div>
 </div>
