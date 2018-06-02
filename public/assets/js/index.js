@@ -43,6 +43,7 @@ $('#newtrip-form').submit(function (event) {
         $.post('/newtrip', newTrip).then(function (data) {
             M.toast({ html: 'Trip added' }, 4000)
             $('#trips').append(data)
+            $('#newtrip-form').trigger('reset')
 
         })
     })

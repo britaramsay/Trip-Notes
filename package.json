@@ -17,6 +17,7 @@
     "aws-sdk": "2.x",
     "body-parser": "^1.18.2",
     "chokidar-cli": "^1.2.0",
+    "cryptr": "^3.0.0",
     "dotenv": "^5.0.1",
     "ejs": "2.x",
     "express": "^4.16.3",

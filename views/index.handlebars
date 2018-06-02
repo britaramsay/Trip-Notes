@@ -2,68 +2,44 @@
     <div class="section no-pad-bot">
         <div class="container">
             <div class="row">
+                <h2 class="red-text">Trips</h2>
+                
                 {{!-- <p class='saveTrip' data-id='1'>Trip 1</p>
                 <p class='saveTrip' data-id='2'>Trip 2</p>
                 <p class='saveTrip' data-id='3'>Trip 3</p> --}}
 
                 <!-- Toggle new trip form -->
-                <p>Add a new trip <a id='newtrip-btn' class="btn-floating btn-large waves-effect waves-light red btn-small" href='#'><i class="material-icons">add</i></a></p>
+                <p>Add a new trip</p>
 
                 <!-- New trip form -->
-                <form class="col s12" id='newtrip-form' style='display:none'>
+                <form class="col s12" id='newtrip-form'>
                     <div class="row">
-                        <div class="input-field col s6">
+                        <div class="input-field col s4">
                             <input id="title" type="text" class="validate">
                             <label for="title">Title</label>
                         </div>
-                        <div class="input-field col s6">
+                        <div class="input-field col s4">
                             <input id="description" type="text" class="validate">
                             <label for="description">Description</label>
                         </div>
-                        <div>
+                        <div class="input-field col s4">
                             <label>
                                 <input id='private' name="private" type="checkbox" class="filled-in"/>
                                 <span>Private</span>
                             </label>  
                         </div>
-                        
+                    </div>
+                    <div class="row">
                         <button class="btn waves-effect waves-light submit-trip" type="submit" name="submit">Add</button>
                     </div>
                 </form>
 
-                <p>Check in with Geolocation</p>
-
-                <button class="waves-effect waves-light btn" onclick="getLocation()">Check In</button>
-                <div id='alert'></div> 
-
-                <form class="col s12">
-                    <div class="row">
-                        <p>Or search a location to check in to</p>
-                        <div class="input-field col s6">
-                            <input id="venue" type="text" class="validate">
-                            <label for="venue">Venue Name</label>
-                        </div>
-                        <div class="input-field col s6">
-                            <input id="city" type="text" class="validate">
-                            <label for="city">City</label>
-                        </div>
-                        <button class="btn waves-effect waves-light submit" type="submit" name="submit">Submit
-                            <i class="material-icons right">send</i>
-                        </button>
-                    </div>
-                    
-                </form>
-                {{!-- Upload file --}}
-                <input type="file" id="file-input">
-                <p id="status">Please select a file</p>
+               
                
             </div>
 
-            <h2 class="red-text">Trips</h2>
             <div class="row" id="trips">
-                {{#each trips}}
-                    {{> tripsummary}}
-                {{/each}}
+                {{>trips}}
             </div>
         </div>
     </div>

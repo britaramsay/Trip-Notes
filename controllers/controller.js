@@ -1,10 +1,12 @@
 const express = require('express'),
-    exphbs = require("express-handlebars"),
+    exphbs = require('express-handlebars'),
     router = express.Router(),
     db = require('../models'),
     request = require('request'),
     aws = require('aws-sdk'),
-    S3_BUCKET = process.env.S3_BUCKET;
+    S3_BUCKET = process.env.S3_BUCKET,
+    Cryptr = require('cryptr'),
+    cryptr = new Cryptr(process.env.CRYPTR_KEY);
 
 aws.config.region = 'us-east-2';
 // We will set heroku config variables in the command line when we host it
@@ -53,10 +55,29 @@ router.get('/user/trips/:authId', (req, res) => {
         db.Trip.findAll({
             where: { UserId: user.id },
         }).then(trips => {
-            res.render('partials/trips', { trips: trips, layout: false })
+            res.render('partials/trips', { trips: trips.map(trip => { trip.tripLink = cryptr.encrypt(user.id + '_' + trip.id); return trip }), layout: false })
         })
 
     })
+})
+
+// Find a trip based off of the encrypted key (user.id_trip.id)
+// should only be accessible IF public OR private & belongs to signed in user
+router.get('/trip/:key', (req, res) => {
+    let decryptedTrip = cryptr.decrypt(req.params.key).split('_').pop()
+
+    db.Trip.findOne({
+        where: { id: decryptedTrip }
+    }).then(trip => {
+        db.Checkin.findAll({
+            where: {TripId: decryptedTrip},
+            include: [db.Location]
+        }).then(checkins => {
+            console.log('checkins', checkins)
+            res.render('trip', { trip: trip, checkins: checkins})
+        })
+    })
+
 })
 
 // finds or creates user associated with Google Firebase's auth ID

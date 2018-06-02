@@ -1,0 +1,42 @@
+<div id="index-banner" class="parallax-container">
+    <div class="section no-pad-bot">
+        <div class="container">
+            <div class="row">
+
+                <h2 class="red-text">{{trip.Title}}</h2>
+
+                <p>{{trip.Description}}</p>
+
+                <h3 class="red-text">Checkins</h3>
+                <p>Check in with Geolocation</p>
+                <button class="waves-effect waves-light btn" onclick="getLocation()">Check In</button>
+                <div id='alert'></div>
+
+                <form class="col s12">
+                    <div class="row">
+                        <p>Or search a location to check in to</p>
+                        <div class="input-field col s6">
+                            <input id="venue" type="text" class="validate">
+                            <label for="venue">Venue Name</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="city" type="text" class="validate">
+                            <label for="city">City</label>
+                        </div>
+                        <button class="btn waves-effect waves-light submit" type="submit" name="submit">Submit
+                            <i class="material-icons right">send</i>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="row" id="checkins">
+                   {{>checkins checkins=checkins}}
+                </div>
+                
+                {{!-- Upload file --}}
+                <input type="file" id="file-input">
+                <p id="status">Please select a file</p>
+            </div>
+        </div>
+    </div>
+</div>
