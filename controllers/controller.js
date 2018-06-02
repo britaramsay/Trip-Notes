@@ -51,11 +51,11 @@ router.get('/dashboard', (req, res) => {
 
 // Find all trips made by the current user and render them to trips partial
 router.get('/user/trips/:authId', (req, res) => {
-      db.Trip.findAll({
-            where: { UserId: req.cookies.userId },
-      }).then(trips => {
-            res.render('partials/trips', { trips: trips.map(trip => { trip.tripLink = cryptr.encrypt(req.cookies.userId + '_' + trip.id); return trip }), layout: false })
-      })
+    db.Trip.findAll({
+        where: { UserId: req.cookies.userId },
+    }).then(trips => {
+        res.render('partials/trips', { trips: trips.map(trip => { trip.tripLink = cryptr.encrypt(req.cookies.userId + '_' + trip.id); return trip }), layout: false })
+    })
 })
 
 // Find a trip based off of the encrypted key (user.id_trip.id)
@@ -74,46 +74,35 @@ router.get('/trip/:key', (req, res) => {
             res.render('trip', { trip: trip, checkins: checkins })
         })
     })
-
 })
 
 // finds or creates user associated with Google Firebase's auth ID
 router.get('/user/:uid', (req, res) => {
-      db.User.findOrCreate({
-            where: {
-                  AuthID: req.params.uid
-            }
-      }).spread((user, created) => {
-            let foundUser = user.get({ plain: true })
-            foundUser.isNew = created
-            
-            res.cookie('userId', user.id, {maxAge: 900000});
+    db.User.findOrCreate({
+        where: {
+                AuthID: req.params.uid
+        }
+    }).spread((user, created) => {
+        let foundUser = user.get({ plain: true })
+        foundUser.isNew = created
+        
+        res.cookie('userId', user.id, {maxAge: 900000});
 
-            res.json(foundUser)
-      })
+        res.json(foundUser)
+    })
 })
 
 // Find user id of the current user and create a new trip
 router.post('/newtrip', (req, res) => {
   
-//     var userId;
-    // Find id of user with the requested authId
-//     db.User.findOne({
-//         where: {
-//             AuthID: req.body.uid
-//         }
-//     }).then(user => {
-//         userId = user.id
-//         // create new trip
-        db.Trip.create({
-            UserId: req.cookies.userId,
-            Title: req.body.title,
-            Description: req.body.description,
-            Private: req.body.private
-        }).then(function (data) {
-            res.render('partials/tripsummary', { trip: data, layout: false })
-        })
-//     })
+    db.Trip.create({
+        UserId: req.cookies.userId,
+        Title: req.body.title,
+        Description: req.body.description,
+        Private: req.body.private
+    }).then(function (data) {
+        res.render('partials/tripsummary', { trip: data, layout: false })
+    })
 })
 
 // Posts user's current location or venue searched for 
@@ -182,10 +171,10 @@ router.post('/checkin', (req, res) => {
                             Lng: response.location.lng
                         }
                     }, {
-                            include: [{
-                                association: db.Checkin.belongsTo(db.Location)
-                            }]
-                        }).then(function (data) { res.render('partials/checkin', {checkin: data, layout: false}) })
+                        include: [{
+                            association: db.Checkin.belongsTo(db.Location)
+                        }]
+                    }).then(function (data) { res.render('partials/checkin', {checkin: data, layout: false}) })
                 })
             })
         }
