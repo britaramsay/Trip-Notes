@@ -1,6 +1,6 @@
 $(document).ready(() => {
     //sideNav Bar
-        $('.sidenav').sidenav('draggable', true);
+    $('.sidenav').sidenav('draggable', true);
       
     // Initialize carousel
     $('.carousel').carousel();

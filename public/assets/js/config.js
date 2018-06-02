@@ -62,8 +62,13 @@ firebase.auth().onAuthStateChanged(function (user) {
 
         // find or create user
         $.ajax('/user/' + uid, { type: 'GET' }).then(function (data) {
-            console.log('data', data)
-        })
+            console.log('data', data);
+        });
+
+        $('#username').text(displayName);
+        $('#email').text(email);
+        $('#userlogo').attr('src', photoURL)
+
     } else {
         // User is signed out. Hide signout button
         $('.g-signout2').hide()

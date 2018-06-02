@@ -1,1 +1,104 @@
 // put custom CSS in here
+/* Custom Stylesheet */
+/**
+ * Use this file to override Materialize files so you can update
+ * the core Materialize files in the future
+ *
+ * Made By MaterializeCSS.com
+ */
+ nav ul a,
+ nav .brand-logo {
+   color: #444;
+ }
+
+ .g-signin2 {
+  line-height: 2rem;
+  margin-top: 15px
+}
+
+.g-signout2 {
+  display: none
+}
+ 
+ p {
+   line-height: 2rem;
+ }
+ 
+ .sidenav-trigger {
+   color: #26a69a;
+ }
+ 
+ .parallax-container {
+   min-height: 380px;
+   line-height: 0;
+   height: auto;
+   color: rgba(255,255,255,.9);
+ }
+   .parallax-container .section {
+     width: 100%;
+   }
+ 
+ .icon-block {
+   padding: 0 15px;
+ }
+ .icon-block .material-icons {
+   font-size: inherit;
+ }
+ 
+ footer.page-footer {
+   margin: 0;
+ }
+ 
+ p {
+   color: rgb(49, 49, 49);
+ }
+
+ #logo-container {
+   width: auto;
+   
+ }
+
+ #logo {
+  width: 100px;
+  margin: 5px 2px;
+ }
+
+ .carousel .carousel-item {
+   width: 500px !important}
+ 
+.footer-copyright {
+  margin: auto;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  background: linear-gradient(to right,rgb(250, 249, 249), rgba(245, 227, 227, 0.945))
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+.page-footer {
+  background-color:linear-gradient(to right,rgba(58, 57, 57, 0.808),rgba(77, 75, 73, 0.842))
+}
+
+
+ 
+@media only screen and (max-width : 992px) {
+    .parallax-container .section {
+      position: absolute;
+      top: 40%;
+    }
+    #index-banner .section {
+      top: 10%;
+    }
+  }
+  
+  @media only screen and (max-width : 600px) {
+    #index-banner .section {
+      top: 0;
+    }
+  }
