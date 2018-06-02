@@ -70,11 +70,11 @@ router.get('/trip/:key', (req, res) => {
         where: { id: decryptedTrip }
     }).then(trip => {
         db.Checkin.findAll({
-            where: {TripId: decryptedTrip},
+            where: { TripId: decryptedTrip },
             include: [db.Location]
         }).then(checkins => {
             console.log('checkins', checkins)
-            res.render('trip', { trip: trip, checkins: checkins})
+            res.render('trip', { trip: trip, checkins: checkins })
         })
     })
 
@@ -184,7 +184,7 @@ router.post('/checkin', (req, res) => {
                             include: [{
                                 association: db.Checkin.belongsTo(db.Location)
                             }]
-                        }).then(function (data) { res.json(data) })
+                        }).then(function (data) { res.render('partials/checkin', {checkin: data, layout: false}) })
                 })
             })
         }

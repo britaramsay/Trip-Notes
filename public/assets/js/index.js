@@ -60,11 +60,13 @@ function showPosition(position) {
         var location = {
             lat: position.coords.latitude,
             long: position.coords.longitude
-        }
+        };
 
         $.post('/checkin', location).then(function (data) {
-            M.toast({ html: 'Checked into ' + data.Location.Name }, 4000)
-        })
+            M.toast({ html: 'Checked into venue' }, 4000);
+            $('#checkins').append(data);
+            $('#checkinForm').trigger('reset');
+        });
     }
 
 $('.submit').on('click', function (e) {
@@ -76,7 +78,9 @@ $('.submit').on('click', function (e) {
         }
 
         $.post('/checkin', location).then(function (data) {
-            M.toast({ html: 'Checked into ' + data.Location.Name }, 4000)
+            M.toast({ html: 'Checked into venue' }, 4000);
+            $('#checkins').append(data);
+            $('#checkinForm').trigger('reset');
         })
     })
 
