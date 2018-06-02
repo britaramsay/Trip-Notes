@@ -70,9 +70,13 @@
  }
 
  #logo-container {
-   width: 10px;
-   padding: 5px 5px;
+   width: auto;
    
+ }
+
+ #logo {
+  width: 100px;
+  margin: 5px 2px;
  }
 
  .carousel .carousel-item {
