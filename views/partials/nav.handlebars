@@ -1,3 +1,4 @@
+{{!-- full screen Nav --}}
 <nav class="white" role="navigation">
         <div class="nav-wrapper container">
             <a id="logo-container" href="/"> <img id="logo" src="/assets/image/logoD.png"/></a>
@@ -16,7 +17,7 @@
              
             </ul>
 
-            <ul id="nav-mobile" class="side-nav hide-on-large-only">
+            {{!-- <ul id="nav-mobile" class="side-nav hide-on-large-only">
              
                 <li>
                     <!-- Google sign in -->                    
@@ -31,8 +32,37 @@
                 </li>
                
             </ul>
-            {{!-- <a href="#" data-activates="nav-mobile" class="button-collapse">
+            <a href="#" data-activates="nav-mobile" class="button-collapse">
                 <i class="material-icons">menu</i>
             </a> --}}
+
         </div>
     </nav>
+
+
+{{!-- sidebar Nav --}}
+ <nav> <!-- navbar content here  --> </nav>
+
+  <ul id="slide-out" class="sidenav">
+    <li><div class="user-view">
+      <div class="background">
+        <img src="/assets/image/LS9.jpg">
+      </div>
+      <a href="#user"><img class="circle" src="/assets/image/logoF.png"></a>
+      <a href="#name"><span class="white-text name">John Doe</span></a>
+      <a href="#email"><span class="white-text email">jdandturk@gmail.com</span></a>
+    </div></li>
+    <li><a href="/"><i class="material-icons">landscape</i>Home</a></li>
+   
+    <li><div class="divider"></div></li>
+  
+    <li><a class="waves-effect g-signin2" data-onsuccess="onSignIn" data-theme="light">Sign In</a></li>
+    <li><a class="waves-effect g-signout2" onclick="signOut();" href="#">Sign Out</a></li>
+    <li><a class="waves-effect" href="/dashboard" id="dashboard-btn">Dashboard</a></li>
+
+
+  </ul>
+  <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
+        
+
+    

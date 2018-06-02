@@ -85,3 +85,14 @@
 .footer-copyright {
   margin: auto;
 }
+
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  background: linear-gradient(to right, rgb(241, 221, 221), rgba(245, 227, 227, 0.945))
+}
+
+main {
+  flex: 1 0 auto;
+}

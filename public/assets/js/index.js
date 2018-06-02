@@ -1,6 +1,10 @@
 $(document).ready(() => {
+    //sideNav Bar
+        $('.sidenav').sidenav('draggable', true);
+      
     // Initialize carousel
     $('.carousel').carousel();
+
     // Listen for a file to be uploaded
     $("#file-input").on('change', () => {
         const files = document.getElementById('file-input').files;
