@@ -90,9 +90,13 @@ body {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  background: linear-gradient(to right, rgb(241, 221, 221), rgba(245, 227, 227, 0.945))
+  background: linear-gradient(to right,rgb(250, 249, 249), rgba(245, 227, 227, 0.945))
 }
 
 main {
   flex: 1 0 auto;
+}
+
+.page-footer {
+  background-color:linear-gradient(to right,rgba(58, 57, 57, 0.808),rgba(77, 75, 73, 0.842))
 }
