@@ -2,7 +2,9 @@ const express = require('express'),
       bodyParser = require('body-parser'),
       PORT = process.env.PORT || 8080,
       app = express(),
-      db = require("./models");
+      db = require("./models"),
+      cookieParser = require('cookie-parser');
+      // session = require('express-session');
 
 // Serve static content for the app from the "public" directory in the application directory.
 app.use(express.static("public"));
@@ -12,6 +14,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // parse application/json
 app.use(bodyParser.json());
+
+app.use(cookieParser())
 
 // Set Handlebars.
 var exphbs = require("express-handlebars");
