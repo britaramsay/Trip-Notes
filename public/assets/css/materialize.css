@@ -2900,11 +2900,11 @@ ul.staggered-list li {
   overflow: hidden;
   min-height: 50px;
   display: flex;
-  align-items: center;
+  align-items: center !important;
   justify-content: space-between;
   padding: 10px 0px;
   color: rgba(255, 255, 255, 0.8);
-  background-color: rgba(51, 51, 51, 0.08);
+  /* background-color: rgba(51, 51, 51, 0.08); */
 }
 
 table, th, td {
