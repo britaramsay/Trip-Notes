@@ -11,9 +11,8 @@ module.exports = function (sequelize, DataTypes) {
     })
 
     Note.associate = (models) => {
+        models.Checkin.hasMany(Note, { onDelete: 'CASCADE' })
         Note.belongsTo(models.Checkin)
-        Note.belongsTo(models.Photo)
-        Note.belongsToMany(models.Tag, { through: models.NoteTag })
     }
     return Note
 }

@@ -33,7 +33,6 @@ router.get('/sign-s3', (req, res) => {
             signedRequest: data,
             url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
         };
-        console.log(returnData)
         res.write(JSON.stringify(returnData));
         res.end();
     });
@@ -41,7 +40,7 @@ router.get('/sign-s3', (req, res) => {
 
 // Render about page at home route
 router.get('/', (req, res) => {
-      res.render('about', {})
+    res.render('about', {})
 })
 
 // Render index page when dashboard is visited
@@ -50,7 +49,7 @@ router.get('/dashboard', (req, res) => {
 })
 
 // Find all trips made by the current user and render them to trips partial
-router.get('/user/trips/:authId', (req, res) => {
+router.get('/user/trips', (req, res) => {
     db.Trip.findAll({
         where: { UserId: req.cookies.userId },
     }).then(trips => {
@@ -66,12 +65,13 @@ router.get('/trip/:key', (req, res) => {
     db.Trip.findOne({
         where: { id: decryptedTrip }
     }).then(trip => {
+        trip.key = req.params.key
+
         db.Checkin.findAll({
             where: { TripId: decryptedTrip },
             include: [db.Location]
         }).then(checkins => {
-            console.log('checkins', checkins)
-            res.render('trip', { trip: trip, checkins: checkins })
+            res.render('trip', { trip: trip, checkins: checkins.map(checkin => { checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id); return checkin; }) })
         })
     })
 })
@@ -80,13 +80,13 @@ router.get('/trip/:key', (req, res) => {
 router.get('/user/:uid', (req, res) => {
     db.User.findOrCreate({
         where: {
-                AuthID: req.params.uid
+            AuthID: req.params.uid
         }
     }).spread((user, created) => {
         let foundUser = user.get({ plain: true })
         foundUser.isNew = created
-        
-        res.cookie('userId', user.id, {maxAge: 900000});
+
+        res.cookie('userId', user.id, { maxAge: 900000 });
 
         res.json(foundUser)
     })
@@ -94,24 +94,24 @@ router.get('/user/:uid', (req, res) => {
 
 // Find user id of the current user and create a new trip
 router.post('/newtrip', (req, res) => {
-  
+
     db.Trip.create({
         UserId: req.cookies.userId,
         Title: req.body.title,
         Description: req.body.description,
         Private: req.body.private
-    }).then(function (data) {
-        res.render('partials/tripsummary', { trip: data, layout: false })
+    }).then(trip => {
+        trip.tripLink = cryptr.encrypt(req.cookies.userId + '_' + trip.id)
+        res.render('partials/tripsummary', { trip: trip, layout: false })
     })
 })
 
 // Posts user's current location or venue searched for 
 router.post('/checkin', (req, res) => {
-    var tripName = 'Disney'
-    // Change to req.body.tripName later, create a trip called Disney for testing
+    let tripId = cryptr.decrypt(req.body.trip).split('_').pop()
 
     // Define foursquare query search
-    var qs;
+    let qs;
     // If user searched a location
     if (req.body.venue && req.body.city) {
         qs = {
@@ -138,46 +138,55 @@ router.post('/checkin', (req, res) => {
         url: 'https://api.foursquare.com/v2/venues/search',
         method: 'GET',
         qs: qs
-    }, function (err, resp, body) {
+    }, (err, resp, body) => {
         if (err) {
             console.error(err);
         } else {
             // Parse api response
             var response = JSON.parse(body).response.venues[0];
-            // Find trip specified by user
-            db.Trip.findOne({
+            db.Checkin.count({
                 where: {
-                    Title: tripName,
-                    // Get user id
-                    UserId: req.cookies.userId
+                    TripId: tripId
                 }
-            }).then(trip => {
-                // Get id of selected trip
-                let tripId = trip.dataValues.id
-                // Find all check ins in this trip and order by descending
-                db.Checkin.count({
+            }).then(count => {
+                // Create a checkin with the next highest order number
+                db.Location.findOrCreate({
                     where: {
-                        TripId: tripId
+                        ApiID: response.id
+                    },
+                    defaults: {
+                        Name: response.name,
+                        Lat: response.location.lat,
+                        Lng: response.location.lng
                     }
-                }).then(count => {
-                    // Create a checkin with the next highest order number
-                    db.Checkin.create({
-                        Order: count + 1,
-                        TripId: tripId,
-                        Location: {
-                            ApiID: response.id,
-                            Name: response.name,
-                            Lat: response.location.lat,
-                            Lng: response.location.lng
+                }).spread((location, created) => {
+                    db.Checkin.create(
+                        {
+                            Order: count + 1,
+                            TripId: tripId,
+                            LocationId: location.id
                         }
-                    }, {
-                        include: [{
-                            association: db.Checkin.belongsTo(db.Location)
-                        }]
-                    }).then(function (data) { res.render('partials/checkin', {checkin: data, layout: false}) })
+                    ).then(checkin => {
+                        checkin.Location = location
+                        checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id)
+                        res.render('partials/checkin', { checkin: checkin, layout: false })
+                    })
                 })
             })
         }
+    })
+})
+
+// Create a note for a checkin
+router.post('/note', (req, res) => {
+    let checkin = cryptr.decrypt(req.body.checkin).split('_').pop()
+
+    db.Note.count({ where: { CheckinId: checkin } }).then(count => {
+        db.Note.create({
+            Order: count + 1,
+            Note: req.body.note,
+            CheckinId: checkin
+        }).then(data => { res.json(data) })
     })
 })
 
@@ -185,7 +194,7 @@ router.post('/saveTrip', (req, res) => {
     db.SavedTrip.create({
         UserId: req.cookies.userId,
         TripId: req.body.trip
-    }).then(function (data) { res.json(data) })
+    }).then((data) => { res.json(data) })
 })
 
 module.exports = router;

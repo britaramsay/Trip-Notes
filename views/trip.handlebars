@@ -9,7 +9,7 @@
 
                 <h3 class="red-text">Checkins</h3>
                 <p>Check in with Geolocation</p>
-                <button class="waves-effect waves-light btn" onclick="getLocation()">Check In</button>
+                <button class="waves-effect waves-light btn" onclick="getLocation('{{trip.Key}}')">Check In</button>
                 <div id='alert'></div>
 
                 <form id="checkinForm" class="col s12">
@@ -23,6 +23,7 @@
                             <input id="city" type="text" class="validate">
                             <label for="city">City</label>
                         </div>
+                        <input type="hidden" id="tripKey" value="{{trip.key}}"/>
                         <button class="btn waves-effect waves-light submit" type="submit" name="submit">Submit
                             <i class="material-icons right">send</i>
                         </button>
@@ -30,13 +31,32 @@
                 </form>
 
                 <div class="row" id="checkins">
-                   {{>checkins checkins=checkins}}
+                    {{>checkins checkins=checkins}}
                 </div>
-                
+
                 {{!-- Upload file --}}
                 <input type="file" id="file-input">
                 <p id="status">Please select a file</p>
             </div>
         </div>
+    </div>
+
+    <!-- modals -->
+    <div id="noteModal" class="modal">
+        <form id="addNote">
+            <div class="modal-content">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <textarea id="note" class="materialize-textarea" required></textarea>
+                        <label for="note">Add a note</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn waves-effect waves-light submit" type="submit" name="submit">Submit
+                    <i class="material-icons right">send</i>
+                </button>
+            </div>
+        </form>
     </div>
 </div>

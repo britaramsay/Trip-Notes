@@ -8,9 +8,8 @@ module.exports = function (sequelize, DataTypes) {
     })
 
     Photo.associate = (models) => {
+        models.Checkin.hasMany(Photo, { onDelete: 'CASCADE' })
         Photo.belongsTo(models.Checkin)
-        Photo.hasMany(models.Note, { onDelete: 'CASCADE' })
-        Photo.belongsToMany(models.Tag, { through: models.PhotoTag })
     }
 
     return Photo

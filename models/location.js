@@ -9,10 +9,6 @@ module.exports = function (sequelize, DataTypes) {
         Lat: DataTypes.DECIMAL(10, 8),
         Lng: DataTypes.DECIMAL(11, 8)
     }, { timestamps: false })
-
-    Location.associate = (models) => {
-        Location.hasMany(models.Checkin, { onDelete: 'CASCADE' })
-    }
-
+    
     return Location
 }
