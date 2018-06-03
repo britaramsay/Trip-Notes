@@ -23,7 +23,7 @@ router.get('/sign-s3', (req, res) => {
         ContentType: fileType,
         ACL: 'public-read'
     };
-
+    // TODO: Hash url to keep images w duplicate file names
     s3.getSignedUrl('putObject', s3Params, (err, data) => {
         if (err) {
             console.log(err);
@@ -31,17 +31,18 @@ router.get('/sign-s3', (req, res) => {
         }
         const returnData = {
             signedRequest: data,
-            url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
+            url: `https://s3.us-east-2.amazonaws.com/${S3_BUCKET}/${fileName}`
         };
-        console.log(returnData)
         res.write(JSON.stringify(returnData));
         res.end();
     });
+    
 });
+
 
 // Render about page at home route
 router.get('/', (req, res) => {
-      res.render('about', {})
+    res.render('about', {})
 })
 
 // Render index page when dashboard is visited
@@ -61,8 +62,9 @@ router.get('/user/trips/:authId', (req, res) => {
 // Find a trip based off of the encrypted key (user.id_trip.id)
 // should only be accessible IF public OR private & belongs to signed in user
 router.get('/trip/:key', (req, res) => {
-    let decryptedTrip = cryptr.decrypt(req.params.key).split('_').pop()
+    console.log('hello', req.params.key)
 
+    let decryptedTrip = cryptr.decrypt(req.params.key).split('_').pop()
     db.Trip.findOne({
         where: { id: decryptedTrip }
     }).then(trip => {
@@ -94,7 +96,6 @@ router.get('/user/:uid', (req, res) => {
 
 // Find user id of the current user and create a new trip
 router.post('/newtrip', (req, res) => {
-  
     db.Trip.create({
         UserId: req.cookies.userId,
         Title: req.body.title,
@@ -102,6 +103,22 @@ router.post('/newtrip', (req, res) => {
         Private: req.body.private
     }).then(function (data) {
         res.render('partials/tripsummary', { trip: data, layout: false })
+    })
+})
+
+router.post('/newImage', (req, res) => {
+    db.Photo.count({
+        where: {
+            // Have option to click which checkin the image goes with and send id in body
+            // For now change to one of you checkin ids
+            CheckinId: 23
+        }
+    }).then(count => {
+        db.Photo.create({
+            URL: req.body.url,
+            Order: count + 1,
+            CheckinId: 23,
+        })
     })
 })
 
@@ -174,7 +191,12 @@ router.post('/checkin', (req, res) => {
                         include: [{
                             association: db.Checkin.belongsTo(db.Location)
                         }]
-                    }).then(function (data) { res.render('partials/checkin', {checkin: data, layout: false}) })
+                    }).then(function (data) { 
+                        // Save when you click on a check in for uploading photos after checked in?
+                        res.cookie('checkIn', data.dataValues.id, {maxAge: 900000});
+
+                        res.render('partials/checkin', {checkin: data, layout: false}) 
+                    })
                 })
             })
         }

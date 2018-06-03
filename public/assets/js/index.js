@@ -5,17 +5,17 @@ $(document).ready(() => {
     // Initialize carousel
     $('.carousel').carousel();
 
-    // Listen for a file to be uploaded
-    $("#file-input").on('change', () => {
-        const files = document.getElementById('file-input').files;
-        const file = files[0];
-        if (file == null) {
-            M.toast({ html: 'No file selected' }, 4000)
-        }
-        getSignedRequest(file);
-    }
-    )
+    
 });
+// Listen for a file to be uploaded
+$("#file-input").on('change', () => {
+    const files = document.getElementById('file-input').files;
+    const file = files[0];
+    if (file == null) {
+        M.toast({ html: 'No file selected' }, 4000)
+    }
+    getSignedRequest(file);
+})
 
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
@@ -27,99 +27,114 @@ firebase.auth().onAuthStateChanged(function (user) {
 
 // Toggle show/hide new trip form
 $('#newtrip-btn').on('click', function () {
-        $('#newtrip-form').toggle()
-    })
+    $('#newtrip-form').toggle()
+})
 
 $('#newtrip-form').submit(function (event) {
-        event.preventDefault();
+    event.preventDefault();
 
-        var newTrip = {
-            uid: firebase.auth().currentUser.uid,
-            title: $('#title').val().trim(),
-            description: $('#description').val().trim(),
-            private: $('#private').is(":checked")
-        }
+    var newTrip = {
+        uid: firebase.auth().currentUser.uid,
+        title: $('#title').val().trim(),
+        description: $('#description').val().trim(),
+        private: $('#private').is(":checked")
+    }
 
-        $.post('/newtrip', newTrip).then(function (data) {
-            M.toast({ html: 'Trip added' }, 4000)
-            $('#trips').append(data)
-            $('#newtrip-form').trigger('reset')
+    $.post('/newtrip', newTrip).then(function (data) {
+        M.toast({ html: 'Trip added' }, 4000)
+        $('#trips').append(data)
+        $('#newtrip-form').trigger('reset')
 
-        })
     })
+})
 
 function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition);
-        } else {
-            M.toast({ html: 'Geolocation is not supported by this browser.' }, 4000)
-        }
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
+        M.toast({ html: 'Geolocation is not supported by this browser.' }, 4000)
     }
+}
 
 function showPosition(position) {
-        var location = {
-            lat: position.coords.latitude,
-            long: position.coords.longitude
-        };
+    var location = {
+        lat: position.coords.latitude,
+        long: position.coords.longitude
+    };
 
-        $.post('/checkin', location).then(function (data) {
-            M.toast({ html: 'Checked into venue' }, 4000);
-            $('#checkins').append(data);
-            $('#checkinForm').trigger('reset');
-        });
-    }
+    $.post('/checkin', location).then(function (data) {
+        M.toast({ html: 'Checked into venue' }, 4000);
+        $('#checkins').append(data);
+        $('#checkinForm').trigger('reset');
+    });
+}
 
 $('.submit').on('click', function (e) {
-        e.preventDefault();
+    e.preventDefault();
 
-        var location = {
-            venue: $('#venue').val().trim(),
-            city: $('#city').val().trim()
-        }
+    var location = {
+        venue: $('#venue').val().trim(),
+        city: $('#city').val().trim()
+    }
 
-        $.post('/checkin', location).then(function (data) {
-            M.toast({ html: 'Checked into venue' }, 4000);
-            $('#checkins').append(data);
-            $('#checkinForm').trigger('reset');
-        })
+    $.post('/checkin', location).then(function (data) {
+        M.toast({ html: 'Checked into venue' }, 4000);
+        $('#checkins').append(data);
+        $('#checkinForm').trigger('reset');
     })
+})
 
 $('.saveTrip').on('click', function () {
-        var tripId = $(this).data('id')
-        $.get('/user/' + firebase.auth().currentUser.uid).then(function (data) {
-            $.post('/saveTrip', {
-                trip: tripId,
-                uid: data.id
-            }, function (response) {
-                M.toast({ html: 'Saved ' + response.TripId }, 4000)
-            })
+    var tripId = $(this).data('id')
+    $.get('/user/' + firebase.auth().currentUser.uid).then(function (data) {
+        $.post('/saveTrip', {
+            trip: tripId,
+            uid: data.id
+        }, function (response) {
+            M.toast({ html: 'Saved ' + response.TripId }, 4000)
         })
     })
+})
 
 
 function getSignedRequest(file) {
-        const xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
+    
+    xhr.open('GET', `/sign-s3?file-name=${file.name}&file-type=${file.type}`);
 
-        xhr.open('GET', `/sign-s3?file-name=${file.name}&file-type=${file.type}`);
-
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    const response = JSON.parse(xhr.responseText);
-                    console.log(response)
-                    // Post url to db
-                    $.ajax({
-                        url: response.signedRequest,
-                        type: 'PUT',
-                        success: function () {
-                            M.toast({ html: 'File uploaded' }, 4000)
-                        }
-                    });
-                }
-                else {
-                    alert('Could not get signed URL.');
-                }
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                var imgUrl = response.url;
+                        
+                uploadFile(file, response.signedRequest, response.url)
             }
-        };
-        xhr.send();
-    }
+            else {
+                alert('Could not get signed URL.');
+            }
+        }
+    };
+    xhr.send();
+}
+
+function uploadFile(file, signedRequest, url) {
+    const options = {
+        method: 'PUT',
+        body: file
+    };
+    return fetch(signedRequest, options).then(response => {
+        if (!response.ok) {
+            throw new Error(`${response.status}: ${response.statusText}`);
+        }
+        M.toast({ html: 'File uploaded' }, 4000)
+        
+        $.post('/newImage', {url: url}).then(function () {
+            M.toast({ html: 'Saved to db' }, 4000)
+        })
+
+        // $('#newImage').append('<img src="'+url+'"/>')
+
+        return url;
+    });
+}
