@@ -5,9 +5,12 @@ module.exports = function (sequelize, DataTypes) {
 
     //TODO: relationships
     Checkin.associate = (models) => {
+        models.Trip.hasMany(Checkin, { onDelete: 'CASCADE' })
         Checkin.belongsTo(models.Trip)
+
+        models.Location.hasMany(Checkin, { onDelete: 'CASCADE' })
         Checkin.belongsTo(models.Location)
-        Checkin.hasMany(models.Note, { onDelete: 'CASCADE' })
+
         Checkin.belongsToMany(models.Tag, { through: models.CheckinTag })
     }
 

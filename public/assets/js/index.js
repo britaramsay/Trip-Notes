@@ -1,11 +1,36 @@
+var notesModal;
+
 $(document).ready(() => {
     //sideNav Bar
-    $('.sidenav').sidenav('draggable', true);
-      
+    try {
+        $('.sidenav').sidenav('draggable', true);
+    } catch (e) {
+        // die silently
+    }
+
     // Initialize carousel
     $('.carousel').carousel();
 
-    
+
+    // Initialize Modals
+    var elems = document.querySelectorAll('.modal');
+    var instances = M.Modal.init(elems, { onOpenStart: onNotesModalOpen, onCloseEnd: onNotesModalClosed })
+    var notesModalElement = document.querySelector('#noteModal');
+    if (notesModalElement) {
+        notesModal = M.Modal.getInstance(notesModalElement);
+    }
+
+    // Listen for a file to be uploaded
+    $("#file-input").on('change', () => {
+        const files = document.getElementById('file-input').files;
+        const file = files[0];
+        if (file == null) {
+            M.toast({ html: 'No file selected' }, 4000)
+        }
+        getSignedRequest(file);
+    }
+    )
+
 });
 // Listen for a file to be uploaded
 $("#file-input").on('change', () => {
@@ -17,9 +42,18 @@ $("#file-input").on('change', () => {
     getSignedRequest(file);
 })
 
+function onNotesModalOpen(modal, trigger) {
+    $('#noteModal button').attr('data-key', $(trigger).attr('data-key'));
+}
+
+function onNotesModalClosed(modal) {
+    $('#addNote').trigger('reset');
+    $('#noteModal button').attr('data-key', '');
+}
+
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
-        $.ajax('/user/trips/' + user.uid, { type: 'GET' }).then(function (data) {
+        $.ajax('/user/trips', { type: 'GET' }).then(function (data) {
             $('#trips').html(data)
         })
     }
@@ -38,15 +72,31 @@ $('#newtrip-form').submit(function (event) {
         title: $('#title').val().trim(),
         description: $('#description').val().trim(),
         private: $('#private').is(":checked")
-    }
+    };
 
     $.post('/newtrip', newTrip).then(function (data) {
-        M.toast({ html: 'Trip added' }, 4000)
-        $('#trips').append(data)
-        $('#newtrip-form').trigger('reset')
+        M.toast({ html: 'Trip "' + data.name + '" added' }, 4000);
+        $('#trips').append(data.html);
+        $('#newtrip-form').trigger('reset');
 
-    })
-})
+    });
+});
+
+$('#addNote').submit(function (event) {
+    event.preventDefault();
+
+    var note = {
+        checkin: $('#noteModal button').attr('data-key'),
+        note: $('#note').val().trim()
+    };
+
+    $.post('/note', note).then(function (data) {
+        M.toast({ html: 'Note added' }, 4000);
+        notesModal.close();
+
+        $('.notes[data-key="' + data.checkinKey + '"]').append(data.html)
+    });
+});
 
 function getLocation() {
     if (navigator.geolocation) {
@@ -58,31 +108,35 @@ function getLocation() {
 
 function showPosition(position) {
     var location = {
+        trip: $('#tripKey').val(),
         lat: position.coords.latitude,
         long: position.coords.longitude
     };
 
     $.post('/checkin', location).then(function (data) {
-        M.toast({ html: 'Checked into venue' }, 4000);
-        $('#checkins').append(data);
+        M.toast({ html: 'Checked in to ' + data.name }, 4000);
+        $('#checkins').append(data.html);
         $('#checkinForm').trigger('reset');
     });
 }
 
-$('.submit').on('click', function (e) {
+$('#checkinForm').submit(function (e) {
     e.preventDefault();
 
     var location = {
+        trip: $('#tripKey').val(),
         venue: $('#venue').val().trim(),
         city: $('#city').val().trim()
     }
 
     $.post('/checkin', location).then(function (data) {
+        M.toast({ html: 'Checked in to ' + data.name }, 4000);
+        $('#checkins').append(data.html);
         M.toast({ html: 'Checked into venue' }, 4000);
         $('#checkins').append(data);
         $('#checkinForm').trigger('reset');
-    })
-})
+    });
+}
 
 $('.saveTrip').on('click', function () {
     var tripId = $(this).data('id')
