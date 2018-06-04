@@ -20,16 +20,16 @@ $(document).ready(() => {
         notesModal = M.Modal.getInstance(notesModalElement);
     }
 
-    // Listen for a file to be uploaded
-    $("#file-input").on('change', () => {
-        const files = document.getElementById('file-input').files;
-        const file = files[0];
-        if (file == null) {
-            M.toast({ html: 'No file selected' }, 4000)
-        }
-        getSignedRequest(file);
-    }
-    )
+    // // Listen for a file to be uploaded
+    // $("#file-input").on('change', () => {
+    //     const files = document.getElementById('file-input').files;
+    //     const file = files[0];
+    //     if (file == null) {
+    //         M.toast({ html: 'No file selected' }, 4000)
+    //     }
+    //     getSignedRequest(file);
+    // }
+    // )
 
 });
 // Listen for a file to be uploaded
@@ -161,7 +161,6 @@ function getSignedRequest(file) {
             if (xhr.status === 200) {
                 const response = JSON.parse(xhr.responseText);
                 var imgUrl = response.url;
-                        
                 uploadFile(file, response.signedRequest, response.url)
             }
             else {
@@ -187,7 +186,7 @@ function uploadFile(file, signedRequest, url) {
             M.toast({ html: 'Saved to db' }, 4000)
         })
 
-        // $('#newImage').append('<img src="'+url+'"/>')
+        $('#newImage').append('<img src="'+url+'"/>')
 
         return url;
     });

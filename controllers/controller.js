@@ -18,9 +18,11 @@ router.get('/sign-s3', (req, res) => {
     const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
     const s3Params = {
         Bucket: S3_BUCKET,
-        Key: fileName,
+        // Same image in folder based on user, or checkin/trip?
+        Key: cryptr.encrypt(req.cookies.userId)+'/'+fileName,
         Expires: 60,
         ContentType: fileType,
+        // ContentDisposition: "attachment; filename=" + fileName + "/" + cryptr.encrypt(req.cookies.userId),
         ACL: 'public-read'
     };
     // TODO: Hash url to keep images w duplicate file names
@@ -31,7 +33,7 @@ router.get('/sign-s3', (req, res) => {
         }
         const returnData = {
             signedRequest: data,
-            url: `https://s3.us-east-2.amazonaws.com/${S3_BUCKET}/${fileName}`
+            url: `https://s3.us-east-2.amazonaws.com/${S3_BUCKET}/${cryptr.encrypt(req.cookies.userId)}/${fileName}`
         };
         res.write(JSON.stringify(returnData));
         res.end();
