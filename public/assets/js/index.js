@@ -136,7 +136,7 @@ $('#checkinForm').submit(function (e) {
         $('#checkins').append(data);
         $('#checkinForm').trigger('reset');
     });
-}
+})
 
 $('.saveTrip').on('click', function () {
     var tripId = $(this).data('id')
