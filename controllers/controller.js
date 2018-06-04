@@ -58,7 +58,6 @@ router.get('/user/trips', (req, res) => {
 })
 
 // Find a trip based off of the encrypted key (user.id_trip.id)
-// should only be accessible IF public OR private & belongs to signed in user
 router.get('/trip/:key', (req, res) => {
     let decryptedTrip = cryptr.decrypt(req.params.key).split('_').pop()
 
@@ -69,7 +68,7 @@ router.get('/trip/:key', (req, res) => {
 
         db.Checkin.findAll({
             where: { TripId: decryptedTrip },
-            include: [db.Location]
+            include: [db.Location, db.Note]
         }).then(checkins => {
             res.render('trip', { trip: trip, checkins: checkins.map(checkin => { checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id); return checkin; }) })
         })
@@ -102,7 +101,16 @@ router.post('/newtrip', (req, res) => {
         Private: req.body.private
     }).then(trip => {
         trip.tripLink = cryptr.encrypt(req.cookies.userId + '_' + trip.id)
-        res.render('partials/tripsummary', { trip: trip, layout: false })
+
+        req.app.render('partials/tripsummary', { trip: trip, layout: false }, (err, html) => {
+            if (err) {
+                res.status(500).end()
+            }
+            else {
+                res.json({ html: html, name: trip.Title })
+            }
+        })
+
     })
 })
 
@@ -169,7 +177,15 @@ router.post('/checkin', (req, res) => {
                     ).then(checkin => {
                         checkin.Location = location
                         checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id)
-                        res.render('partials/checkin', { checkin: checkin, layout: false })
+
+                        req.app.render('partials/checkin', { checkin: checkin, layout: false }, (err, html) => {
+                            if (err) {
+                                res.status(500).end()
+                            }
+                            else {
+                                res.json({ html: html, name: checkin.Location.Name })
+                            }
+                        })
                     })
                 })
             })
@@ -186,7 +202,16 @@ router.post('/note', (req, res) => {
             Order: count + 1,
             Note: req.body.note,
             CheckinId: checkin
-        }).then(data => { res.json(data) })
+        }).then(note => {
+            req.app.render('partials/note', { note: note, layout: false }, (err, html) => {
+                if (err) {
+                    res.status(500).end()
+                }
+                else {
+                    res.json({ html: html, checkinKey: req.body.checkin })
+                }
+            })
+        })
     })
 })
 

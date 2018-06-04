@@ -64,8 +64,8 @@ $('#newtrip-form').submit(function (event) {
     };
 
     $.post('/newtrip', newTrip).then(function (data) {
-        M.toast({ html: 'Trip added' }, 4000);
-        $('#trips').append(data);
+        M.toast({ html: 'Trip "' + data.name + '" added' }, 4000);
+        $('#trips').append(data.html);
         $('#newtrip-form').trigger('reset');
 
     });
@@ -82,6 +82,8 @@ $('#addNote').submit(function (event) {
     $.post('/note', note).then(function (data) {
         M.toast({ html: 'Note added' }, 4000);
         notesModal.close();
+
+        $('.notes[data-key="' + data.checkinKey + '"]').append(data.html)
     });
 });
 
@@ -101,8 +103,8 @@ function showPosition(position) {
     };
 
     $.post('/checkin', location).then(function (data) {
-        M.toast({ html: 'Checked into venue' }, 4000);
-        $('#checkins').append(data);
+        M.toast({ html: 'Checked in to ' + data.name }, 4000);
+        $('#checkins').append(data.html);
         $('#checkinForm').trigger('reset');
     });
 }
@@ -117,8 +119,8 @@ $('#checkinForm').submit(function (e) {
     }
 
     $.post('/checkin', location).then(function (data) {
-        M.toast({ html: 'Checked into venue' }, 4000);
-        $('#checkins').append(data);
+        M.toast({ html: 'Checked in to ' + data.name }, 4000);
+        $('#checkins').append(data.html);
         $('#checkinForm').trigger('reset');
     })
 })
