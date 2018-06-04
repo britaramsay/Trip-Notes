@@ -23,7 +23,7 @@ router.get('/sign-s3', (req, res) => {
         ContentType: fileType,
         ACL: 'public-read'
     };
-
+    // TODO: Hash url to keep images w duplicate file names
     s3.getSignedUrl('putObject', s3Params, (err, data) => {
         if (err) {
             console.log(err);
@@ -31,12 +31,14 @@ router.get('/sign-s3', (req, res) => {
         }
         const returnData = {
             signedRequest: data,
-            url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
+            url: `https://s3.us-east-2.amazonaws.com/${S3_BUCKET}/${fileName}`
         };
         res.write(JSON.stringify(returnData));
         res.end();
     });
+    
 });
+
 
 // Render about page at home route
 router.get('/', (req, res) => {
@@ -59,8 +61,9 @@ router.get('/user/trips', (req, res) => {
 
 // Find a trip based off of the encrypted key (user.id_trip.id)
 router.get('/trip/:key', (req, res) => {
-    let decryptedTrip = cryptr.decrypt(req.params.key).split('_').pop()
+    console.log('hello', req.params.key)
 
+    let decryptedTrip = cryptr.decrypt(req.params.key).split('_').pop()
     db.Trip.findOne({
         where: { id: decryptedTrip }
     }).then(trip => {
@@ -93,7 +96,6 @@ router.get('/user/:uid', (req, res) => {
 
 // Find user id of the current user and create a new trip
 router.post('/newtrip', (req, res) => {
-
     db.Trip.create({
         UserId: req.cookies.userId,
         Title: req.body.title,
@@ -111,6 +113,22 @@ router.post('/newtrip', (req, res) => {
             }
         })
 
+    })
+})
+
+router.post('/newImage', (req, res) => {
+    db.Photo.count({
+        where: {
+            // Have option to click which checkin the image goes with and send id in body
+            // For now change to one of you checkin ids
+            CheckinId: 23
+        }
+    }).then(count => {
+        db.Photo.create({
+            URL: req.body.url,
+            Order: count + 1,
+            CheckinId: 23,
+        })
     })
 })
 
@@ -177,6 +195,8 @@ router.post('/checkin', (req, res) => {
                     ).then(checkin => {
                         checkin.Location = location
                         checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id)
+                        // Save when you click on a check in for uploading photos after checked in?
+                        res.cookie('checkIn', checkin.dataValues.id, {maxAge: 900000});
 
                         req.app.render('partials/checkin', { checkin: checkin, layout: false }, (err, html) => {
                             if (err) {

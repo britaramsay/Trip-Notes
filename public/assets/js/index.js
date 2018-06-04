@@ -11,6 +11,7 @@ $(document).ready(() => {
     // Initialize carousel
     $('.carousel').carousel();
 
+
     // Initialize Modals
     var elems = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elems, { onOpenStart: onNotesModalOpen, onCloseEnd: onNotesModalClosed })
@@ -29,7 +30,17 @@ $(document).ready(() => {
         getSignedRequest(file);
     }
     )
+
 });
+// Listen for a file to be uploaded
+$("#file-input").on('change', () => {
+    const files = document.getElementById('file-input').files;
+    const file = files[0];
+    if (file == null) {
+        M.toast({ html: 'No file selected' }, 4000)
+    }
+    getSignedRequest(file);
+})
 
 function onNotesModalOpen(modal, trigger) {
     $('#noteModal button').attr('data-key', $(trigger).attr('data-key'));
@@ -121,9 +132,11 @@ $('#checkinForm').submit(function (e) {
     $.post('/checkin', location).then(function (data) {
         M.toast({ html: 'Checked in to ' + data.name }, 4000);
         $('#checkins').append(data.html);
+        M.toast({ html: 'Checked into venue' }, 4000);
+        $('#checkins').append(data);
         $('#checkinForm').trigger('reset');
-    })
-})
+    });
+}
 
 $('.saveTrip').on('click', function () {
     var tripId = $(this).data('id')
@@ -140,22 +153,16 @@ $('.saveTrip').on('click', function () {
 
 function getSignedRequest(file) {
     const xhr = new XMLHttpRequest();
-
+    
     xhr.open('GET', `/sign-s3?file-name=${file.name}&file-type=${file.type}`);
 
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 const response = JSON.parse(xhr.responseText);
-                console.log(response)
-                // Post url to db
-                $.ajax({
-                    url: response.signedRequest,
-                    type: 'PUT',
-                    success: function () {
-                        M.toast({ html: 'File uploaded' }, 4000)
-                    }
-                });
+                var imgUrl = response.url;
+                        
+                uploadFile(file, response.signedRequest, response.url)
             }
             else {
                 alert('Could not get signed URL.');
@@ -163,4 +170,25 @@ function getSignedRequest(file) {
         }
     };
     xhr.send();
+}
+
+function uploadFile(file, signedRequest, url) {
+    const options = {
+        method: 'PUT',
+        body: file
+    };
+    return fetch(signedRequest, options).then(response => {
+        if (!response.ok) {
+            throw new Error(`${response.status}: ${response.statusText}`);
+        }
+        M.toast({ html: 'File uploaded' }, 4000)
+        
+        $.post('/newImage', {url: url}).then(function () {
+            M.toast({ html: 'Saved to db' }, 4000)
+        })
+
+        // $('#newImage').append('<img src="'+url+'"/>')
+
+        return url;
+    });
 }
