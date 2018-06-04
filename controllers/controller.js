@@ -22,7 +22,6 @@ router.get('/sign-s3', (req, res) => {
         Key: cryptr.encrypt(req.cookies.userId)+'/'+fileName,
         Expires: 60,
         ContentType: fileType,
-        // ContentDisposition: "attachment; filename=" + fileName + "/" + cryptr.encrypt(req.cookies.userId),
         ACL: 'public-read'
     };
     // TODO: Hash url to keep images w duplicate file names

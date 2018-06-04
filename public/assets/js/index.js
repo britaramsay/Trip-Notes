@@ -19,18 +19,6 @@ $(document).ready(() => {
     if (notesModalElement) {
         notesModal = M.Modal.getInstance(notesModalElement);
     }
-
-    // // Listen for a file to be uploaded
-    // $("#file-input").on('change', () => {
-    //     const files = document.getElementById('file-input').files;
-    //     const file = files[0];
-    //     if (file == null) {
-    //         M.toast({ html: 'No file selected' }, 4000)
-    //     }
-    //     getSignedRequest(file);
-    // }
-    // )
-
 });
 // Listen for a file to be uploaded
 $("#file-input").on('change', () => {
