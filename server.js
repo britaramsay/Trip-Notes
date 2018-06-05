@@ -4,7 +4,6 @@ const express = require('express'),
       app = express(),
       db = require("./models"),
       cookieParser = require('cookie-parser');
-      // session = require('express-session');
 
 // Serve static content for the app from the "public" directory in the application directory.
 app.use(express.static("public"));

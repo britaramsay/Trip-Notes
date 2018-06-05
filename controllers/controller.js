@@ -24,7 +24,6 @@ router.get('/sign-s3', (req, res) => {
         ContentType: fileType,
         ACL: 'public-read'
     };
-    // TODO: Hash url to keep images w duplicate file names
     s3.getSignedUrl('putObject', s3Params, (err, data) => {
         if (err) {
             console.log(err);
@@ -118,17 +117,14 @@ router.post('/newtrip', (req, res) => {
 })
 
 router.post('/newImage', (req, res) => {
-    db.Photo.count({
-        where: {
-            // Have option to click which checkin the image goes with and send id in body
-            // For now change to one of you checkin ids
-            CheckinId: 23
-        }
+    let checkin = cryptr.decrypt(req.body.checkin).split('_').pop()
+
+    db.Photo.count({ where: {CheckinId: checkin }
     }).then(count => {
         db.Photo.create({
             URL: req.body.url,
             Order: count + 1,
-            CheckinId: 23,
+            CheckinId: checkin,
         })
     })
 })
@@ -169,6 +165,7 @@ router.post('/checkin', (req, res) => {
         if (err) {
             console.error(err);
         } else {
+            console.log(body)
             // Parse api response
             var response = JSON.parse(body).response.venues[0];
             db.Checkin.count({
