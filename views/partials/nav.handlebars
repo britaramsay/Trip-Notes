@@ -1,51 +1,46 @@
 {{!-- full screen Nav --}}
 <nav class="white" role="navigation">
-        <div class="nav-wrapper container">
-            <a id="logo-container" href="/"> <img id="logo" src="/assets/image/logoD.png"/></a>
-            <ul class="right hide-on-med-and-down">
-                <li>
-                    <!-- Google sign in -->                    
-                    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="light"></div>
-                </li>
-                <li>
-                    <!-- Google sign out -->
-                    <a href="#" class="g-signout2" onclick="signOut();">Sign out</a>
-                </li>
-                <li>
-                    <a href='/dashboard' id="dashboard-btn">Dashboard</a>
-                </li>
-             
-            </ul>
-
-           
-
-        </div>
-    </nav>
+    <div class="nav-wrapper container">
+        <a id="logo-container" href="/"> <img id="logo" src="/assets/image/logoD.png"/></a>
+        <ul class="right hide-on-med-and-down">
+            <li>
+                <!-- Google sign in -->                    
+                <div class="g-signin2" data-onsuccess="onSignIn" data-theme="light"></div>
+            </li>
+            <li>
+                <!-- Google sign out -->
+                <a href="#" class="g-signout2" onclick="signOut();">Sign out</a>
+            </li>
+            <li>
+                <a href='/dashboard' id="dashboard-btn">Dashboard</a>
+            </li>
+        </ul>
+    </div>
+</nav>
 
 
 {{!-- sidebar Nav --}}
- {{!-- <nav> <!-- navbar content here  --> </nav> --}}
+{{!-- <nav> <!-- navbar content here  --> </nav> --}}
 
-  <ul id="slide-out" class="sidenav">
-    <li><div class="user-view">
-      <div class="background">
-        <img src="/assets/image/LS9.jpg">
-      </div>
-      <a href="#user"><img class="circle" id="userlogo" src=""></a>
-      <a href="#name"><span class="white-text name" id="username"></span></a>
-      <a href="#email"><span class="white-text email" id="email"></span></a>
-    </div></li>
+<ul id="slide-out" class="sidenav">
+    <li>
+        <div class="user-view">
+        <div class="background">
+            <img src="/assets/image/LS9.jpg">
+        </div>
+        <a href="#user"><img class="circle" id="userlogo" src=""></a>
+        <a href="#name"><span class="white-text name" id="username"></span></a>
+        <a href="#email"><span class="white-text email" id="email"></span></a>
+        </div>
+    </li>   
     <li><a href="/"><i class="material-icons">landscape</i>Home</a></li>
-   
     <li><div class="divider"></div></li>
-  
     <li><a class="waves-effect g-signin2" data-onsuccess="onSignIn" data-theme="light">Sign In</a></li>
     <li><a class="waves-effect g-signout2" onclick="signOut();" href="#">Sign Out</a></li>
     <li><a class="waves-effect" href="/dashboard" id="dashboard-btn">Dashboard</a></li>
+</ul>
 
-
-  </ul>
-  <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
+<a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
         
 
     

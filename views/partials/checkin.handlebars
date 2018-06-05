@@ -1,4 +1,7 @@
-<p>{{checkin.Location.Name}} <a class="waves-effect waves-light btn modal-trigger" href="#noteModal" data-key="{{checkin.checkinKey}}">Add Note</a></p>
+<p>{{checkin.Location.Name}} 
+    <a class="waves-effect waves-light btn modal-trigger" href="#noteModal" data-key="{{checkin.checkinKey}}">Add Note</a>
+</p>
+
 <ul class="notes" data-key="{{checkin.checkinKey}}">
     {{> notes notes=checkin.Notes}}
 </ul>
