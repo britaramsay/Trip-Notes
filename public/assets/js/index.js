@@ -67,10 +67,16 @@ firebase.auth().onAuthStateChanged(function (user) {
         else {
             $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
                 $('.carousel').html(data)
-                $('.carousel').carousel();
+                $('.carousel').carousel({
+                    onCycleTo: function(data) {
+                        // id of current slide in carousel
+                        var tripInfo = $(data).attr('id').split('/')
 
+                        $('#currentTrip').html('<h4>'+tripInfo[1]+'</h4><p>'+tripInfo[2]+'</p>');
+                        $('#currentTripLink').attr('href', '/trip/'+tripInfo[0])
+                    }
+                });
             })
-
         }
     }
 })
