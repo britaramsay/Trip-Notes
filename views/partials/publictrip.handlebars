@@ -1,5 +1,7 @@
-<div class="col s12 m6" id="{{trip.tripLink}}">
-    <div class="card carousel-item">
+
+<div class="col s12 m6 current">
+<a href="/trip/{{trip.tripLink}}">
+    <div class="card carousel-item"  id="{{trip.tripLink}}/{{trip.Title}}/{{trip.Description}}">
         <div class="card-image">
             {{#if trip.photo}}
                 <img style="height: 250px;" src="{{trip.photo.URL}}"> 
@@ -9,8 +11,9 @@
             {{/if}}
             
         </div>
-        <div class="card-action card-panel cyan lighten-3">
-            <span class="card-title">{{trip.Title}} <a href="/trip/{{trip.tripLink}}" class="white-text"><button class="btn waves-effect waves-light">View</button></a></span>
-        </div>
+        {{!-- <div class="card-action card-panel cyan lighten-3"> --}}
+            {{!-- <span class="card-title">{{trip.Title}} <a href="/trip/{{trip.tripLink}}" class="white-text"><button class="btn waves-effect waves-light" id='view{{trip.triplink}}'>View</button></a></span> --}}
+        {{!-- </div> --}}
     </div>
+    </a>
 </div>
