@@ -1,18 +1,18 @@
 {{!-- full screen Nav --}}
-<nav class="white" role="navigation">
+<nav class="nav-color" role="navigation">
     <div class="nav-wrapper container">
-        <a id="logo-container" href="/"> <img id="logo" src="/assets/image/logoD.png"/></a>
-        <ul class="right hide-on-med-and-down">
+        <a id="logo-container" href="/"> <img id="logo" src="/assets/image/logoF.png"/></a>
+        <ul class="right hide-on-med-and-down valign-wrapper">
             <li>
                 <!-- Google sign in -->                    
                 <div class="g-signin2" data-onsuccess="onSignIn" data-theme="light"></div>
             </li>
             <li>
                 <!-- Google sign out -->
-                <a href="#" class="g-signout2" onclick="signOut();">Sign out</a>
+                <a href="#" class="g-signout2 brown-text text-darken-4 valign-wrapper" onclick="signOut();">Sign out</a>
             </li>
             <li>
-                <a href='/dashboard' id="dashboard-btn">Dashboard</a>
+                <a href='/dashboard' id="dashboard-btn" class="brown-text text-darken-4 valign-wrapper">My Trips</a>
             </li>
         </ul>
     </div>
@@ -35,9 +35,9 @@
     </li>   
     <li><a href="/"><i class="material-icons">landscape</i>Home</a></li>
     <li><div class="divider"></div></li>
-    <li><a class="waves-effect g-signin2" data-onsuccess="onSignIn" data-theme="light">Sign In</a></li>
-    <li><a class="waves-effect g-signout2" onclick="signOut();" href="#">Sign Out</a></li>
-    <li><a class="waves-effect" href="/dashboard" id="dashboard-btn">Dashboard</a></li>
+    <li><a class="waves-effect g-signin2 brown-text text-darken-4" data-onsuccess="onSignIn" data-theme="light">Sign In</a></li>
+    <li><a class="waves-effect g-signout2 brown-text text-darken-4 valign-wrapper" onclick="signOut();" href="#">Sign Out</a></li>
+    <li><a class="waves-effect brown-text text-darken-4 valign-wrapper" href="/dashboard" id="dashboard-btn">My Trips</a></li>
 </ul>
 
 <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
