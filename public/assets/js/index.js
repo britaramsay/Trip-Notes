@@ -9,7 +9,6 @@ $(document).ready(() => {
     }
 
     // Initialize carousel
-    $('.carousel').carousel();
 
 
     // Initialize Modals
@@ -60,9 +59,19 @@ function onNotesModalClosed(modal) {
 
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
-        $.ajax('/user/trips', { type: 'GET' }).then(function (data) {
-            $('#trips').html(data)
-        })
+        if(window.location.href.split('/').pop() == 'dashboard') {
+            $.ajax('/user/trips', { type: 'GET' }).then(function (data) {
+                $('#trips').html(data)
+            })
+        }
+        else {
+            $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
+                $('.carousel').html(data)
+                $('.carousel').carousel();
+
+            })
+
+        }
     }
 })
 

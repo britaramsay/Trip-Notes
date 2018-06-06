@@ -50,6 +50,30 @@ router.get('/dashboard', (req, res) => {
     res.render('index', {})
 })
 
+router.get('/trips/public', (req, res) => {
+    db.Trip.findAll({
+        where: { Private: false},
+        include: [
+            {
+                model: db.Checkin,
+                include: [db.Photo]
+            }
+        ]
+    }).then(trips => {
+        
+        res.render('partials/trips',
+            {
+                carousel: true,
+                trips: trips.map(trip => {
+                    trip.photo = findFirstPhoto(trip)
+                    trip.tripLink = cryptr.encrypt(trip.UserId + '_' + trip.id)
+                    return trip
+                }), layout: false
+            }
+        )
+    })
+})
+
 // Find all trips made by the current user and render them to trips partial
 router.get('/user/trips', (req, res) => {
     db.Trip.findAll({
@@ -61,7 +85,6 @@ router.get('/user/trips', (req, res) => {
             }
         ]
     }).then(trips => {
-        console.log(trips)
         res.render('partials/trips',
             {
                 trips: trips.map(trip => {
