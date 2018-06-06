@@ -119,7 +119,7 @@ router.post('/newtrip', (req, res) => {
 router.post('/newImage', (req, res) => {
     let checkin = cryptr.decrypt(req.body.checkin).split('_').pop()
 
-    db.Photo.count({ where: {CheckinId: checkin }
+    db.Photo.count({ where: { CheckinId: checkin }
     }).then(count => {
         db.Photo.create({
             URL: req.body.url,
@@ -131,7 +131,7 @@ router.post('/newImage', (req, res) => {
 
 // Posts user's current location or venue searched for 
 router.post('/checkin', (req, res) => {
-    let tripId = cryptr.decrypt(req.body.trip).split('_').pop()
+    // let tripId = cryptr.decrypt(req.body.trip).split('_').pop()
 
     // Define foursquare query search
     let qs;
@@ -143,7 +143,7 @@ router.post('/checkin', (req, res) => {
             query: req.body.venue,
             near: req.body.city,
             v: '20180323',
-            limit: 1
+            limit: 3
         }
     }
     // If user used geolocation to check in
@@ -153,7 +153,7 @@ router.post('/checkin', (req, res) => {
             client_secret: process.env.CLIENT_SECRET,
             ll: req.body.lat + ',' + req.body.long,
             v: '20180323',
-            limit: 1
+            limit: 3
         }
     }
     // Request foursquare api
@@ -165,51 +165,68 @@ router.post('/checkin', (req, res) => {
         if (err) {
             console.error(err);
         } else {
-            console.log(body)
             // Parse api response
-            var response = JSON.parse(body).response.venues[0];
-            db.Checkin.count({
-                where: {
-                    TripId: tripId
-                }
-            }).then(count => {
-                // Create a checkin with the next highest order number
-                db.Location.findOrCreate({
-                    where: {
-                        ApiID: response.id
-                    },
-                    defaults: {
-                        Name: response.name,
-                        Lat: response.location.lat,
-                        Lng: response.location.lng
-                    }
-                }).spread((location, created) => {
-                    db.Checkin.create(
-                        {
-                            Order: count + 1,
-                            TripId: tripId,
-                            LocationId: location.id
-                        }
-                    ).then(checkin => {
-                        checkin.Location = location
-                        checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id)
-                        // Save when you click on a check in for uploading photos after checked in?
-                        res.cookie('checkIn', checkin.dataValues.id, {maxAge: 900000});
+            // 
+            var locations = JSON.parse(body).response.venues;
+            console.log(locations)
+            // console.log(response.id, response.name)
+            res.render('partials/locations', { locations: locations, layout: false})
 
-                        req.app.render('partials/checkin', { checkin: checkin, layout: false }, (err, html) => {
-                            if (err) {
-                                res.status(500).end()
-                            }
-                            else {
-                                res.json({ html: html, name: checkin.Location.Name })
-                            }
-                        })
-                    })
-                })
-            })
+
         }
     })
 })
+
+router.post('/checkinLocation', (req, res) => {
+    let location = req.body.location.split('+')
+    let lng = location.pop()
+    let lat = location.pop()
+    let name = location.pop()
+    let apiID = location.pop()
+
+    let tripId = cryptr.decrypt(req.body.trip).split('_').pop()
+
+    db.Checkin.count({
+        where: {
+            TripId: tripId
+        }
+    }).then(count => {
+        // Create a checkin with the next highest order number
+        db.Location.findOrCreate({
+            where: {
+                ApiID: apiID
+            },
+            defaults: {
+                Name: name,
+                Lat: lat,
+                Lng: lng
+            }
+        }).spread((location, created) => {
+            db.Checkin.create(
+                {
+                    Order: count + 1,
+                    TripId: tripId,
+                    LocationId: location.id
+                }
+            ).then(checkin => {
+                checkin.Location = location
+                checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id)
+                // Save when you click on a check in for uploading photos after checked in?
+                res.cookie('checkIn', checkin.dataValues.id, {maxAge: 900000});
+
+                req.app.render('partials/checkin', { checkin: checkin, layout: false }, (err, html) => {
+                    if (err) {
+                        res.status(500).end()
+                    }
+                    else {
+                        res.json({ html: html, name: checkin.Location.Name })
+                    }
+                })
+            })
+        })
+    })
+})
+
 
 // Create a note for a checkin
 router.post('/note', (req, res) => {
