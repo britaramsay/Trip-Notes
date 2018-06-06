@@ -19,7 +19,7 @@ router.get('/sign-s3', (req, res) => {
     const s3Params = {
         Bucket: S3_BUCKET,
         // Same image in folder based on user, or checkin/trip?
-        Key: cryptr.encrypt(req.cookies.userId)+'/'+fileName,
+        Key: cryptr.encrypt(req.cookies.userId) + '/' + fileName,
         Expires: 60,
         ContentType: fileType,
         ACL: 'public-read'
@@ -36,7 +36,7 @@ router.get('/sign-s3', (req, res) => {
         res.write(JSON.stringify(returnData));
         res.end();
     });
-    
+
 });
 
 
@@ -71,7 +71,7 @@ router.get('/trip/:key', (req, res) => {
 
         db.Checkin.findAll({
             where: { TripId: decryptedTrip },
-            include: [db.Location, db.Note]
+            include: [db.Location, db.Note, db.Photo]
         }).then(checkins => {
             res.render('trip', { trip: trip, checkins: checkins.map(checkin => { checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id); return checkin; }) })
         })
@@ -119,12 +119,22 @@ router.post('/newtrip', (req, res) => {
 router.post('/newImage', (req, res) => {
     let checkin = cryptr.decrypt(req.body.checkin).split('_').pop()
 
-    db.Photo.count({ where: {CheckinId: checkin }
+    db.Photo.count({
+        where: { CheckinId: checkin }
     }).then(count => {
         db.Photo.create({
             URL: req.body.url,
             Order: count + 1,
             CheckinId: checkin,
+        }).then(photo => {
+            req.app.render('partials/photo', { photo: photo, layout: false }, (err, html) => {
+                if (err) {
+                    res.status(500).end()
+                }
+                else {
+                    res.json({ html: html, key: req.body.checkin})
+                }
+            })
         })
     })
 })
@@ -194,7 +204,7 @@ router.post('/checkin', (req, res) => {
                         checkin.Location = location
                         checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id)
                         // Save when you click on a check in for uploading photos after checked in?
-                        res.cookie('checkIn', checkin.dataValues.id, {maxAge: 900000});
+                        res.cookie('checkIn', checkin.dataValues.id, { maxAge: 900000 });
 
                         req.app.render('partials/checkin', { checkin: checkin, layout: false }, (err, html) => {
                             if (err) {

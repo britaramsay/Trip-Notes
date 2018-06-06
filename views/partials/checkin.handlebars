@@ -1,4 +1,15 @@
-<p>{{checkin.Location.Name}} <a class="waves-effect waves-light btn modal-trigger" href="#noteModal" data-key="{{checkin.checkinKey}}">Add Note</a></p>
+<p>
+    {{checkin.Location.Name}}
+    <a class="waves-effect waves-light btn modal-trigger" href="#noteModal" data-key="{{checkin.checkinKey}}">Add Note</a>
+    <form class="imageUpload">
+        <input data-key="{{checkin.checkinKey}}" type="file" class="dropify" accept="image/*" data-allowed-file-extensions="png jpg jpeg" />
+    </form>
+</p>
+<h5>Notes</h5>
 <ul class="notes" data-key="{{checkin.checkinKey}}">
     {{> notes notes=checkin.Notes}}
+</ul>
+<h5>Photos</h5>
+<ul class="images" data-key="{{checkin.checkinKey}}">
+    {{> photos photos=checkin.Photos}}
 </ul>
