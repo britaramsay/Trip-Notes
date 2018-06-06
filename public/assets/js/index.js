@@ -111,8 +111,9 @@ function showPosition(position) {
     };
 
     $.post('/checkin', location).then(function (data) {
-        M.toast({ html: 'Checked in to ' + data.name }, 4000);
-        $('#checkins').append(data.html);
+        
+        $('#chooseLocation').html(data)        
+
         $('#checkinForm').trigger('reset');
     });
 }
@@ -127,10 +128,11 @@ $('#checkinForm').submit(function (e) {
     }
 
     $.post('/checkin', location).then(function (data) {
-        M.toast({ html: 'Checked in to ' + data.name }, 4000);
-        $('#checkins').append(data.html);
-        M.toast({ html: 'Checked into venue' }, 4000);
-        $('#checkins').append(data);
+        // M.toast({ html: 'Checked in to ' + data.name }, 4000);
+        // $('#checkins').append(data.html);
+        // M.toast({ html: 'Checked into venue' }, 4000);
+        $('#chooseLocation').append(data)
+        // $('#checkins').append(data);
         $('#checkinForm').trigger('reset');
     });
 })
@@ -186,3 +188,12 @@ function uploadFile(file, signedRequest, url, key) {
         return url;
     });
 }
+
+$(document).on('click', '.locationBtn', function() {
+    console.log()
+    $.post('/checkinLocation', {location: $(this).attr('data-key'), trip: $('#tripKey').val()}).then((data) => {
+        M.toast({ html: 'Checked in to ' + data.name }, 4000);
+        $('#checkins').append(data.html);
+        $('#chooseLocation').empty()
+    }) 
+})
