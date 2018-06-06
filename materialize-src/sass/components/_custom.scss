@@ -85,7 +85,9 @@ main {
   background-color:linear-gradient(to right,rgba(58, 57, 57, 0.808),rgba(77, 75, 73, 0.842))
 }
 
-
+.delete {
+    cursor: pointer;
+}
  
 @media only screen and (max-width : 992px) {
     .parallax-container .section {

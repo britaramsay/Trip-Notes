@@ -21,6 +21,16 @@ $(document).ready(() => {
     }
 });
 
+$(document).on('click', '.delete', (event) => {
+    $.ajax('/' + $(event.target).attr('data-type') + '/' + $(event.target).attr('data-key'), { type: 'DELETE' }).then(function (data) {
+        $("#" + $(event.target).attr('data-key')).remove()
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        if (jqXHR.status == 401) {
+            M.toast({ html: 'You are not authorized to delete this item' }, 4000)
+        }
+    });
+});
+
 // Listen for a file to be uploaded
 $(".imageUpload").on('change', (event) => {
     const files = event.target.files;
@@ -111,8 +121,8 @@ function showPosition(position) {
     };
 
     $.post('/checkin', location).then(function (data) {
-        
-        $('#chooseLocation').html(data)        
+
+        $('#chooseLocation').html(data)
 
         $('#checkinForm').trigger('reset');
     });
@@ -189,11 +199,11 @@ function uploadFile(file, signedRequest, url, key) {
     });
 }
 
-$(document).on('click', '.locationBtn', function() {
+$(document).on('click', '.locationBtn', function () {
     console.log()
-    $.post('/checkinLocation', {location: $(this).attr('data-key'), trip: $('#tripKey').val()}).then((data) => {
+    $.post('/checkinLocation', { location: $(this).attr('data-key'), trip: $('#tripKey').val() }).then((data) => {
         M.toast({ html: 'Checked in to ' + data.name }, 4000);
         $('#checkins').append(data.html);
         $('#chooseLocation').empty()
-    }) 
+    })
 })

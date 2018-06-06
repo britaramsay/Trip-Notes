@@ -75,8 +75,8 @@ router.get('/user/trips', (req, res) => {
 })
 
 function findFirstPhoto(trip) {
-    for(var i = 0; i < trip.Checkins.length; i++) {
-        for(var j = 0; j < trip.Checkins[i].Photos.length; j++) {
+    for (var i = 0; i < trip.Checkins.length; i++) {
+        for (var j = 0; j < trip.Checkins[i].Photos.length; j++) {
             return trip.Checkins[i].Photos[j]
         }
     }
@@ -86,8 +86,6 @@ function findFirstPhoto(trip) {
 
 // Find a trip based off of the encrypted key (user.id_trip.id)
 router.get('/trip/:key', (req, res) => {
-    console.log('hello', req.params.key)
-
     let decryptedTrip = cryptr.decrypt(req.params.key).split('_').pop()
     db.Trip.findOne({
         where: { id: decryptedTrip }
@@ -101,6 +99,22 @@ router.get('/trip/:key', (req, res) => {
             res.render('trip', { trip: trip, checkins: checkins.map(checkin => { checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id); return checkin; }) })
         })
     })
+})
+
+// delete a Trip, Checkin, Photo, or Note (only user who owns can delete)
+router.delete('/:type/:key', (req, res) => {
+    let [decryptedUser, decryptedObjId] = cryptr.decrypt(req.params.key).split('_')
+
+    if (decryptedUser != req.cookies.userId) {
+        res.status(401).end()
+    } else {
+        db[req.params.type].findOne({
+            where: { id: decryptedObjId }
+        }).then(obj => {
+            obj.destroy()
+            res.status(200).end()
+        })
+    }
 })
 
 // finds or creates user associated with Google Firebase's auth ID
@@ -205,7 +219,7 @@ router.post('/checkin', (req, res) => {
             var locations = JSON.parse(body).response.venues;
             console.log(locations)
             // console.log(response.id, response.name)
-            res.render('partials/locations', { locations: locations, layout: false})
+            res.render('partials/locations', { locations: locations, layout: false })
 
 
         }
@@ -247,7 +261,7 @@ router.post('/checkinLocation', (req, res) => {
                 checkin.Location = location
                 checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id)
                 // Save when you click on a check in for uploading photos after checked in?
-                res.cookie('checkIn', checkin.dataValues.id, {maxAge: 900000});
+                res.cookie('checkIn', checkin.dataValues.id, { maxAge: 900000 });
 
                 req.app.render('partials/checkin', { checkin: checkin, layout: false }, (err, html) => {
                     if (err) {
