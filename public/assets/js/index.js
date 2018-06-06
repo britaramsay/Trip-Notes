@@ -9,7 +9,6 @@ $(document).ready(() => {
     }
 
     // Initialize carousel
-    $('.carousel').carousel();
 
 
     // Initialize Modals
@@ -60,9 +59,25 @@ function onNotesModalClosed(modal) {
 
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
-        $.ajax('/user/trips', { type: 'GET' }).then(function (data) {
-            $('#trips').html(data)
-        })
+        if(window.location.href.split('/').pop() == 'dashboard') {
+            $.ajax('/user/trips', { type: 'GET' }).then(function (data) {
+                $('#trips').html(data)
+            })
+        }
+        else {
+            $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
+                $('.carousel').html(data)
+                $('.carousel').carousel({
+                    onCycleTo: function(data) {
+                        // id of current slide in carousel
+                        var tripInfo = $(data).attr('id').split('/')
+
+                        $('#currentTrip').html('<h4>'+tripInfo[1]+'</h4><p>'+tripInfo[2]+'</p>');
+                        $('#currentTripLink').attr('href', '/trip/'+tripInfo[0])
+                    }
+                });
+            })
+        }
     }
 })
 

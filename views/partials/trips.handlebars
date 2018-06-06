@@ -1,3 +1,10 @@
-{{#each trips}} 
-    {{> tripsummary trip=this}} 
-{{/each}}
+{{#if carousel}}
+    {{#each trips}} 
+        {{> publictrip trip=this}} 
+    {{/each}}
+{{/if}}
+{{#unless carousel}}
+    {{#each trips}} 
+        {{> tripsummary trip=this}} 
+    {{/each}}
+{{/unless}}

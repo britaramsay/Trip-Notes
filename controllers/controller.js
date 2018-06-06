@@ -50,6 +50,31 @@ router.get('/dashboard', (req, res) => {
     res.render('index', {})
 })
 
+router.get('/trips/public', (req, res) => {
+    db.Trip.findAll({
+        where: { Private: false},
+        include: [
+            {
+                model: db.Checkin,
+                include: [db.Photo]
+            }
+        ]
+    }).then(trips => {
+        
+        res.render('partials/trips',
+            {
+                carousel: true,
+                trips: trips.map(trip => {
+                    trip.photo = findFirstPhoto(trip)
+                    trip.tripLink = cryptr.encrypt(trip.UserId + '_' + trip.id).trim()
+
+                    return trip
+                }), layout: false
+            }
+        )
+    })
+})
+
 // Find all trips made by the current user and render them to trips partial
 router.get('/user/trips', (req, res) => {
     db.Trip.findAll({
@@ -61,7 +86,6 @@ router.get('/user/trips', (req, res) => {
             }
         ]
     }).then(trips => {
-        console.log(trips)
         res.render('partials/trips',
             {
                 trips: trips.map(trip => {
@@ -87,6 +111,8 @@ function findFirstPhoto(trip) {
 // Find a trip based off of the encrypted key (user.id_trip.id)
 router.get('/trip/:key', (req, res) => {
     let decryptedTrip = cryptr.decrypt(req.params.key).split('_').pop()
+    let tripOwner = cryptr.decrypt(req.params.key).split('_')[0] == req.cookies.userId
+
     db.Trip.findOne({
         where: { id: decryptedTrip }
     }).then(trip => {
@@ -96,7 +122,7 @@ router.get('/trip/:key', (req, res) => {
             where: { TripId: decryptedTrip },
             include: [db.Location, db.Note, db.Photo]
         }).then(checkins => {
-            res.render('trip', { trip: trip, checkins: checkins.map(checkin => { checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id); return checkin; }) })
+            res.render('trip', { trip: trip, owner: tripOwner, checkins: checkins.map(checkin => { checkin.owner = tripOwner, checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id); return checkin; }) })
         })
     })
 })

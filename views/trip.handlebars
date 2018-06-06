@@ -2,33 +2,34 @@
     <div class="section no-pad-bot">
         <div class="container">
             <div class="row">
-
                 <h2>{{trip.Title}}</h2>
                 <p>{{trip.Description}}</p>
 
-                <h3>Checkins</h3>
-                <p>Check in with Geolocation</p>
-                <button class="waves-effect waves-light btn" onclick="getLocation('{{trip.Key}}')">Check In</button>
-                <div id='alert'></div>
+                {{#if owner}}
+                    <h3>Checkins</h3>
+                    <p>Check in with Geolocation</p>
+                    <button class="waves-effect waves-light btn" onclick="getLocation('{{trip.Key}}')">Check In</button>
+                    <div id='alert'></div>
 
-                <form id="checkinForm" class="col s12">
-                    <div class="row">
-                        <p>Or search a location to check in to</p>
-                        <div class="input-field col s6">
-                            <input id="venue" type="text" class="validate">
-                            <label for="venue">Venue Name</label>
+                    <form id="checkinForm" class="col s12">
+                        <div class="row">
+                            <p>Or search a location to check in to</p>
+                            <div class="input-field col s6">
+                                <input id="venue" type="text" class="validate">
+                                <label for="venue">Venue Name</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <input id="city" type="text" class="validate">
+                                <label for="city">City</label>
+                            </div>
+                            <input type="hidden" id="tripKey" value="{{trip.key}}"/>
+                            <button class="btn waves-effect waves-light submit" type="submit" name="submit">Submit
+                                <i class="material-icons right">send</i>
+                            </button>
                         </div>
-                        <div class="input-field col s6">
-                            <input id="city" type="text" class="validate">
-                            <label for="city">City</label>
-                        </div>
-                        <input type="hidden" id="tripKey" value="{{trip.key}}"/>
-                        <button class="btn waves-effect waves-light submit" type="submit" name="submit">Submit
-                            <i class="material-icons right">send</i>
-                        </button>
-                    </div>
-                </form>
-                
+                    </form>
+                {{/if}}
+
                 <div class="row" id="chooseLocation">
                     {{>locations}}
                 </div>
