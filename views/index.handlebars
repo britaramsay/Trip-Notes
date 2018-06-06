@@ -3,12 +3,11 @@
         <div class="container">
             <div class="row">
                 <h2 class="red-text">Trips</h2>
-                
                 {{!-- <p class='saveTrip' data-id='1'>Trip 1</p>
                 <p class='saveTrip' data-id='2'>Trip 2</p>
                 <p class='saveTrip' data-id='3'>Trip 3</p> --}}
-
                 <!-- Toggle new trip form -->
+
                 <p>Add a new trip</p>
 
                 <!-- New trip form -->
@@ -33,14 +32,8 @@
                         <button class="btn waves-effect waves-light submit-trip" type="submit" name="submit">Add</button>
                     </div>
                 </form>
-
-               
-               
             </div>
-
-            <div class="row" id="trips">
-                {{>trips}}
-            </div>
+            <div class="row" id="trips">{{>trips}}</div>
         </div>
     </div>
 </div>
