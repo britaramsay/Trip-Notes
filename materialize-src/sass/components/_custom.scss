@@ -11,6 +11,10 @@
    color: #444;
  }
 
+ .nav-color {
+   background:#48c1d1;
+ }
+
  .g-signin2 {
   line-height: 2rem;
   margin-top: 15px
@@ -60,7 +64,13 @@
 
  #logo {
   width: 100px;
+  height:auto;
   margin: 5px 2px;
+ }
+
+ .container img {
+   height: auto;
+
  }
 
  .carousel .carousel-item {
@@ -74,17 +84,18 @@ body {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  background: linear-gradient(to right,rgb(250, 249, 249), rgba(245, 227, 227, 0.945))
+  background: linear-gradient(to right,#eeeeee, #e0f7fa);
+  color:#3e2723;
 }
 
 main {
   flex: 1 0 auto;
 }
 
-.page-footer {
-  background-color:linear-gradient(to right,rgba(58, 57, 57, 0.808),rgba(77, 75, 73, 0.842))
-}
 
+.page-footer {
+  background: #48c1d1;
+}
 
  
 @media only screen and (max-width : 992px) {
