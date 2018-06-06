@@ -101,17 +101,17 @@ router.get('/trip/:key', (req, res) => {
     })
 })
 
-// delete a trip (only user who owns can delete)
-router.delete('/trip/:key', (req, res) => {
-    let [decryptedUser, decryptedTrip] = cryptr.decrypt(req.params.key).split('_')
+// delete a Trip, Checkin, Photo, or Note (only user who owns can delete)
+router.delete('/:type/:key', (req, res) => {
+    let [decryptedUser, decryptedObjId] = cryptr.decrypt(req.params.key).split('_')
 
     if (decryptedUser != req.cookies.userId) {
         res.status(401).end()
     } else {
-        db.Trip.findOne({
-            where: { id: decryptedTrip }
-        }).then(trip => {
-            trip.destroy()
+        db[req.params.type].findOne({
+            where: { id: decryptedObjId }
+        }).then(obj => {
+            obj.destroy()
             res.status(200).end()
         })
     }
