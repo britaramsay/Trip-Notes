@@ -1,13 +1,19 @@
 <div id="{{checkin.checkinKey}}">
     <p>
-        <i class="delete small material-icons text-darken-4" data-type="Checkin" data-key="{{checkin.checkinKey}}">delete</i>
-
+        {{#if checkin.owner}}
+            <i class="delete small material-icons text-darken-4" data-type="Checkin" data-key="{{checkin.checkinKey}}">delete</i>
+        {{/if}}
+        
         {{checkin.Location.Name}}
-        <a class="waves-effect waves-light btn modal-trigger" href="#noteModal" data-key="{{checkin.checkinKey}}">Add Note</a>
-        <form class="imageUpload">
-            <input data-key="{{checkin.checkinKey}}" type="file" accept="image/*" />
-        </form>
+        
+        {{#if checkin.owner}}
+            <a class="waves-effect waves-light btn modal-trigger" href="#noteModal" data-key="{{checkin.checkinKey}}">Add Note</a>
+            <form class="imageUpload">
+                <input data-key="{{checkin.checkinKey}}" type="file" accept="image/*" />
+            </form>
+        {{/if}}
     </p>
+         
     <h5>Notes</h5>
     <ul class="notes" data-key="{{checkin.checkinKey}}">
         {{> notes notes=checkin.Notes}}

@@ -110,6 +110,8 @@ function findFirstPhoto(trip) {
 // Find a trip based off of the encrypted key (user.id_trip.id)
 router.get('/trip/:key', (req, res) => {
     let decryptedTrip = cryptr.decrypt(req.params.key).split('_').pop()
+    let tripOwner = cryptr.decrypt(req.params.key).split('_').pop() == req.cookies.userId
+
     db.Trip.findOne({
         where: { id: decryptedTrip }
     }).then(trip => {
@@ -119,7 +121,7 @@ router.get('/trip/:key', (req, res) => {
             where: { TripId: decryptedTrip },
             include: [db.Location, db.Note, db.Photo]
         }).then(checkins => {
-            res.render('trip', { trip: trip, checkins: checkins.map(checkin => { checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id); return checkin; }) })
+            res.render('trip', { trip: trip, owner: tripOwner, checkins: checkins.map(checkin => { checkin.owner = tripOwner, checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id); return checkin; }) })
         })
     })
 })
