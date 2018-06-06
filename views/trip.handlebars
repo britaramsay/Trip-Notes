@@ -28,16 +28,14 @@
                         </button>
                     </div>
                 </form>
-
+                
+                <div class="row" id="chooseLocation">
+                    {{>locations}}
+                </div>
+                
                 <div class="row" id="checkins">
                     {{>checkins checkins=checkins}}
                 </div>
-
-                {{!-- Upload file --}}
-                <input type="file" id="file-input">
-                <p id="status">Please select a file</p>
-
-                <div id="newImage"></div>
             </div>
         </div>
     </div>
@@ -55,7 +53,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn waves-effect waves-light submit" type="submit" name="submit">Submit
-                    <i class="material-icons right">Send</i>
+                    <i class="material-icons right">send</i>
                 </button>
             </div>
         </form>

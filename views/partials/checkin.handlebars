@@ -1,7 +1,19 @@
-<p>{{checkin.Location.Name}} 
-    <a class="waves-effect waves-light btn modal-trigger" href="#noteModal" data-key="{{checkin.checkinKey}}">Add Note</a>
-</p>
+<div id="{{checkin.checkinKey}}">
+    <p>
+        <i class="delete small material-icons text-darken-4" data-type="Checkin" data-key="{{checkin.checkinKey}}">delete</i>
 
-<ul class="notes" data-key="{{checkin.checkinKey}}">
-    {{> notes notes=checkin.Notes}}
-</ul>
+        {{checkin.Location.Name}}
+        <a class="waves-effect waves-light btn modal-trigger" href="#noteModal" data-key="{{checkin.checkinKey}}">Add Note</a>
+        <form class="imageUpload">
+            <input data-key="{{checkin.checkinKey}}" type="file" accept="image/*" />
+        </form>
+    </p>
+    <h5>Notes</h5>
+    <ul class="notes" data-key="{{checkin.checkinKey}}">
+        {{> notes notes=checkin.Notes}}
+    </ul>
+    <h5>Photos</h5>
+    <ul class="images" data-key="{{checkin.checkinKey}}">
+        {{> photos photos=checkin.Photos}}
+    </ul>
+</div>

@@ -1,19 +1,23 @@
-  <div class="row">
-    <div class="col s12 m6">
-      <div class="card">
+
+<div class="col s12 m6" id="{{trip.tripLink}}">
+    <div class="card">
         <div class="card-image">
-          <img src="#">
-          <span class="card-title">{{trip.Title}}</span>
+            {{#if trip.photo}}
+                <img src="{{trip.photo.URL}}"> 
+            {{else}}
+                <!-- need to replace with default image -->
+                <img src="https://placekitten.com/g/300/300"> 
+            {{/if}}
+            <span class="card-title">{{trip.Title}}</span>
         </div>
         <div class="card-content">
-          <p>{{trip.Description}}</p>
+            <p>{{trip.Description}}</p>
         </div>
         <div class="card-action card-panel cyan lighten-3">
-          <a href="/trip/{{trip.tripLink}}" class= "brown-text">View Trip</a>
-          <a href="/trip/{{trip.tripLink}}">  <i class="small material-icons">share</i></a>
-          <i class="small material-icons" id="deleteTrip">delete</i>
-          {{#if trip.Private}}<i class="small material-icons right">lock_outline</i>{{/if}}
+            <a href="/trip/{{trip.tripLink}}" class="white-text">View Trip</a>
+            <a href="/trip/{{trip.tripLink}}"><i class="small material-icons">share</i></a>
+            <i class="delete small material-icons text-darken-4 !important" data-type="Trip" data-key="{{trip.tripLink}}">delete</i>
+            {{#if trip.Private}}<i class="small material-icons text-darken-4 right">lock_outline</i>{{/if}}
         </div>
-      </div>
     </div>
-  </div>
+</div>
