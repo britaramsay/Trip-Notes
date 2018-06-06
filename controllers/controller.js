@@ -54,10 +54,35 @@ router.get('/dashboard', (req, res) => {
 router.get('/user/trips', (req, res) => {
     db.Trip.findAll({
         where: { UserId: req.cookies.userId },
+        include: [
+            {
+                model: db.Checkin,
+                include: [db.Photo]
+            }
+        ]
     }).then(trips => {
-        res.render('partials/trips', { trips: trips.map(trip => { trip.tripLink = cryptr.encrypt(req.cookies.userId + '_' + trip.id); return trip }), layout: false })
+        console.log(trips)
+        res.render('partials/trips',
+            {
+                trips: trips.map(trip => {
+                    trip.photo = findFirstPhoto(trip)
+                    trip.tripLink = cryptr.encrypt(req.cookies.userId + '_' + trip.id)
+                    return trip
+                }), layout: false
+            }
+        )
     })
 })
+
+function findFirstPhoto(trip) {
+    for(var i = 0; i < trip.Checkins.length; i++) {
+        for(var j = 0; j < trip.Checkins[i].Photos.length; j++) {
+            return trip.Checkins[i].Photos[j]
+        }
+    }
+
+    return null
+}
 
 // Find a trip based off of the encrypted key (user.id_trip.id)
 router.get('/trip/:key', (req, res) => {
@@ -132,7 +157,7 @@ router.post('/newImage', (req, res) => {
                     res.status(500).end()
                 }
                 else {
-                    res.json({ html: html, key: req.body.checkin})
+                    res.json({ html: html, key: req.body.checkin })
                 }
             })
         })
