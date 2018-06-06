@@ -66,7 +66,8 @@ router.get('/trips/public', (req, res) => {
                 carousel: true,
                 trips: trips.map(trip => {
                     trip.photo = findFirstPhoto(trip)
-                    trip.tripLink = cryptr.encrypt(trip.UserId + '_' + trip.id)
+                    trip.tripLink = cryptr.encrypt(trip.UserId + '_' + trip.id).trim()
+
                     return trip
                 }), layout: false
             }
@@ -110,7 +111,7 @@ function findFirstPhoto(trip) {
 // Find a trip based off of the encrypted key (user.id_trip.id)
 router.get('/trip/:key', (req, res) => {
     let decryptedTrip = cryptr.decrypt(req.params.key).split('_').pop()
-    let tripOwner = cryptr.decrypt(req.params.key).split('_').pop() == req.cookies.userId
+    let tripOwner = cryptr.decrypt(req.params.key).split('_')[0] == req.cookies.userId
 
     db.Trip.findOne({
         where: { id: decryptedTrip }
