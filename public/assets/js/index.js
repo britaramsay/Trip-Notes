@@ -20,14 +20,23 @@ $(document).ready(() => {
         notesModal = M.Modal.getInstance(notesModalElement);
     }
 });
+
 // Listen for a file to be uploaded
-$("#file-input").on('change', () => {
-    const files = document.getElementById('file-input').files;
+$(".imageUpload").on('change', (event) => {
+    const files = event.target.files;
     const file = files[0];
     if (file == null) {
-        M.toast({ html: 'No file selected' }, 4000)
+        M.toast({ html: 'No file selected' }, 4000);
     }
-    getSignedRequest(file);
+    else if (['png', 'jpg', 'jpeg'].indexOf(file.name.split('.').pop()) == -1) {
+        M.toast({ html: 'Only images' }, 4000);
+    }
+    else {
+        getSignedRequest(file, $(event.target).attr('data-key'));
+    }
+
+    // clear form
+    $(event.target).val(null);
 })
 
 function onNotesModalOpen(modal, trigger) {
@@ -141,9 +150,9 @@ $('.saveTrip').on('click', function () {
 })
 
 
-function getSignedRequest(file) {
+function getSignedRequest(file, key) {
     const xhr = new XMLHttpRequest();
-    
+
     xhr.open('GET', `/sign-s3?file-name=${file.name}&file-type=${file.type}`);
 
     xhr.onreadystatechange = () => {
@@ -151,7 +160,7 @@ function getSignedRequest(file) {
             if (xhr.status === 200) {
                 const response = JSON.parse(xhr.responseText);
                 var imgUrl = response.url;
-                uploadFile(file, response.signedRequest, response.url)
+                uploadFile(file, response.signedRequest, response.url, key)
             }
             else {
                 alert('Could not get signed URL.');
@@ -161,7 +170,7 @@ function getSignedRequest(file) {
     xhr.send();
 }
 
-function uploadFile(file, signedRequest, url) {
+function uploadFile(file, signedRequest, url, key) {
     const options = {
         method: 'PUT',
         body: file
@@ -171,12 +180,10 @@ function uploadFile(file, signedRequest, url) {
             throw new Error(`${response.status}: ${response.statusText}`);
         }
         M.toast({ html: 'File uploaded' }, 4000)
-        
-        $.post('/newImage', {url: url}).then(function () {
-            M.toast({ html: 'Saved to db' }, 4000)
-        })
 
-        $('#newImage').append('<img src="'+url+'"/>')
+        $.post('/newImage', { url: url, checkin: key }).then(function (data) {
+            $('.images[data-key="' + data.key + '"').append(data.html)
+        })
 
         return url;
     });

@@ -19,7 +19,7 @@ router.get('/sign-s3', (req, res) => {
     const s3Params = {
         Bucket: S3_BUCKET,
         // Same image in folder based on user, or checkin/trip?
-        Key: cryptr.encrypt(req.cookies.userId)+'/'+fileName,
+        Key: cryptr.encrypt(req.cookies.userId) + '/' + fileName,
         Expires: 60,
         ContentType: fileType,
         ACL: 'public-read'
@@ -36,7 +36,7 @@ router.get('/sign-s3', (req, res) => {
         res.write(JSON.stringify(returnData));
         res.end();
     });
-    
+
 });
 
 
@@ -54,10 +54,35 @@ router.get('/dashboard', (req, res) => {
 router.get('/user/trips', (req, res) => {
     db.Trip.findAll({
         where: { UserId: req.cookies.userId },
+        include: [
+            {
+                model: db.Checkin,
+                include: [db.Photo]
+            }
+        ]
     }).then(trips => {
-        res.render('partials/trips', { trips: trips.map(trip => { trip.tripLink = cryptr.encrypt(req.cookies.userId + '_' + trip.id); return trip }), layout: false })
+        console.log(trips)
+        res.render('partials/trips',
+            {
+                trips: trips.map(trip => {
+                    trip.photo = findFirstPhoto(trip)
+                    trip.tripLink = cryptr.encrypt(req.cookies.userId + '_' + trip.id)
+                    return trip
+                }), layout: false
+            }
+        )
     })
 })
+
+function findFirstPhoto(trip) {
+    for(var i = 0; i < trip.Checkins.length; i++) {
+        for(var j = 0; j < trip.Checkins[i].Photos.length; j++) {
+            return trip.Checkins[i].Photos[j]
+        }
+    }
+
+    return null
+}
 
 // Find a trip based off of the encrypted key (user.id_trip.id)
 router.get('/trip/:key', (req, res) => {
@@ -71,7 +96,7 @@ router.get('/trip/:key', (req, res) => {
 
         db.Checkin.findAll({
             where: { TripId: decryptedTrip },
-            include: [db.Location, db.Note]
+            include: [db.Location, db.Note, db.Photo]
         }).then(checkins => {
             res.render('trip', { trip: trip, checkins: checkins.map(checkin => { checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id); return checkin; }) })
         })
@@ -119,12 +144,22 @@ router.post('/newtrip', (req, res) => {
 router.post('/newImage', (req, res) => {
     let checkin = cryptr.decrypt(req.body.checkin).split('_').pop()
 
-    db.Photo.count({ where: { CheckinId: checkin }
+    db.Photo.count({
+        where: { CheckinId: checkin }
     }).then(count => {
         db.Photo.create({
             URL: req.body.url,
             Order: count + 1,
             CheckinId: checkin,
+        }).then(photo => {
+            req.app.render('partials/photo', { photo: photo, layout: false }, (err, html) => {
+                if (err) {
+                    res.status(500).end()
+                }
+                else {
+                    res.json({ html: html, key: req.body.checkin })
+                }
+            })
         })
     })
 })
@@ -221,6 +256,28 @@ router.post('/checkinLocation', (req, res) => {
                     else {
                         res.json({ html: html, name: checkin.Location.Name })
                     }
+                }).spread((location, created) => {
+                    db.Checkin.create(
+                        {
+                            Order: count + 1,
+                            TripId: tripId,
+                            LocationId: location.id
+                        }
+                    ).then(checkin => {
+                        checkin.Location = location
+                        checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id)
+                        // Save when you click on a check in for uploading photos after checked in?
+                        res.cookie('checkIn', checkin.dataValues.id, { maxAge: 900000 });
+
+                        req.app.render('partials/checkin', { checkin: checkin, layout: false }, (err, html) => {
+                            if (err) {
+                                res.status(500).end()
+                            }
+                            else {
+                                res.json({ html: html, name: checkin.Location.Name })
+                            }
+                        })
+                    })
                 })
             })
         })
