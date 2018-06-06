@@ -256,28 +256,6 @@ router.post('/checkinLocation', (req, res) => {
                     else {
                         res.json({ html: html, name: checkin.Location.Name })
                     }
-                }).spread((location, created) => {
-                    db.Checkin.create(
-                        {
-                            Order: count + 1,
-                            TripId: tripId,
-                            LocationId: location.id
-                        }
-                    ).then(checkin => {
-                        checkin.Location = location
-                        checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id)
-                        // Save when you click on a check in for uploading photos after checked in?
-                        res.cookie('checkIn', checkin.dataValues.id, { maxAge: 900000 });
-
-                        req.app.render('partials/checkin', { checkin: checkin, layout: false }, (err, html) => {
-                            if (err) {
-                                res.status(500).end()
-                            }
-                            else {
-                                res.json({ html: html, name: checkin.Location.Name })
-                            }
-                        })
-                    })
                 })
             })
         })
