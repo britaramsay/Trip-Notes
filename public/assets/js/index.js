@@ -12,6 +12,30 @@ $(document).ready(() => {
         // die silently
     }
 
+    //initialize copy buttons
+    if (ClipboardJS.isSupported()) {
+        var clipboard = new ClipboardJS('.copy', {
+            text: function (trigger) {
+                // build absolute path to link
+                return absolutePath(trigger.getAttribute('data-link'));
+            }
+        });
+
+        // alert that link has been copied
+        clipboard.on('success', function (e) {
+            M.toast({ html: 'Copied to clipboard!' }, 4000)
+            e.clearSelection();
+        });
+
+        // on error, simply re-direct to link
+        clipboard.on('error', function (e) {
+            window.location.href = absolutePath(trigger.getAttribute('data-link'));
+        });
+        $('.copy').show();
+    } else {
+        $('.copy').hide();
+    }
+
     // Initialize Modals
     var elems = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elems, { onOpenStart: onNotesModalOpen, onCloseEnd: onNotesModalClosed })
@@ -22,6 +46,7 @@ $(document).ready(() => {
 
     // if(window.location.href.split('/').pop() !== 'dashboard') {
         $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
+            // Initialize carousel
             $('.carousel').html(data)
             $('.carousel').carousel({
                 onCycleTo: function(data) {
@@ -75,7 +100,7 @@ function onNotesModalClosed(modal) {
 
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
-        if(window.location.href.split('/').pop() == 'dashboard') {
+        if (window.location.href.split('/').pop() == 'dashboard') {
             $.ajax('/user/trips', { type: 'GET' }).then(function (data) {
                 $('#trips').html(data)
             })
@@ -214,6 +239,12 @@ function uploadFile(file, signedRequest, url, key) {
 
         return url;
     });
+}
+
+function absolutePath(href) {
+    var link = document.createElement("a");
+    link.href = href;
+    return link.href;
 }
 
 $(document).on('click', '.locationBtn', function () {

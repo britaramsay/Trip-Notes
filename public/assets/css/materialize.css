@@ -8150,7 +8150,7 @@ main {
   background: #48c1d1;
 }
 
-.delete {
+.delete, .copy {
   cursor: pointer;
 }
 
