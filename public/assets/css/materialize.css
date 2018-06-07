@@ -8154,6 +8154,10 @@ main {
   cursor: pointer;
 }
 
+.datepicker-day-button {
+  color: #48c1d1 !important;
+}
+
 @media only screen and (max-width: 992px) {
   .parallax-container .section {
     position: absolute;
