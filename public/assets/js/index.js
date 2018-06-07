@@ -1,6 +1,10 @@
 var notesModal;
 
 $(document).ready(() => {
+
+
+    // date picker
+    $('.datepicker').datepicker();
     //sideNav Bar
     try {
         $('.sidenav').sidenav('draggable', true);

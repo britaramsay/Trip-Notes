@@ -2,7 +2,7 @@
     <div class="section no-pad-bot">
         <div class="container">
             <div class="row">
-                <h2 class="brown-text darken-4">Trips</h2>
+                <h2 class="brown-text darken-4">My Trips</h2>
                 {{!-- <p class='saveTrip' data-id='1'>Trip 1</p>
                 <p class='saveTrip' data-id='2'>Trip 2</p>
                 <p class='saveTrip' data-id='3'>Trip 3</p> --}}
@@ -13,20 +13,43 @@
                 <!-- New trip form -->
                 <form class="col s12" id='newtrip-form'>
                     <div class="row">
-                        <div class="input-field col s4">
+                        <div class="input-field col s12 m8 ">
                             <input id="title" type="text" class="validate">
                             <label for="title">Title</label>
                         </div>
-                        <div class="input-field col s4">
-                            <input id="description" type="text" class="validate">
-                            <label for="description">Description</label>
-                        </div>
-                        <div class="input-field col s4">
+
+                    {{!-- Set to Private for not searchable --}}
+                        <div class="input-field col s12 m4">
                             <label>
                                 <input id='private' name="private" type="checkbox" class="filled-in"/>
                                 <span>Private</span>
                             </label>  
                         </div>
+                        
+                       {{!-- Trip date selection --}}
+                    <div class="row">
+                         <div class="input-field col s12 m6">
+                            <form>
+                                <div class="input-field">
+                                    <input type="text" class="datepicker">
+                                    <label for="title">Trip Date</label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                      
+
+
+
+                        {{!-- add Description/notes of the trips --}}
+                    <div class="row">
+                        <div class="input-field col s12 m12">
+                            <input id="description" type="text" class="validate">
+    
+                            <label for="description">Description</label>
+                        </div>
+                        
+                        
                     </div>
                     <div class="row">
                         <button class="btn waves-effect waves-light submit-trip" type="submit" name="submit">Add</button>
