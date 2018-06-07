@@ -12,9 +12,6 @@ $(document).ready(() => {
         // die silently
     }
 
-    // Initialize carousel
-
-
     //initialize copy buttons
     if (ClipboardJS.isSupported()) {
         var clipboard = new ClipboardJS('.copy', {
@@ -39,7 +36,6 @@ $(document).ready(() => {
         $('.copy').hide();
     }
 
-
     // Initialize Modals
     var elems = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elems, { onOpenStart: onNotesModalOpen, onCloseEnd: onNotesModalClosed })
@@ -47,6 +43,22 @@ $(document).ready(() => {
     if (notesModalElement) {
         notesModal = M.Modal.getInstance(notesModalElement);
     }
+
+    // if(window.location.href.split('/').pop() !== 'dashboard') {
+        $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
+            // Initialize carousel
+            $('.carousel').html(data)
+            $('.carousel').carousel({
+                onCycleTo: function(data) {
+                    // id of current slide in carousel
+                    var tripInfo = $(data).attr('id').split('/')
+
+                    $('#currentTrip').html('<h4>'+tripInfo[1]+'</h4><p>'+tripInfo[2]+'</p>');
+                    $('#currentTripLink').attr('href', '/trip/'+tripInfo[0])
+                }
+            });
+        })
+    // }
 });
 
 $(document).on('click', '.delete', (event) => {
@@ -91,20 +103,6 @@ firebase.auth().onAuthStateChanged(function (user) {
         if (window.location.href.split('/').pop() == 'dashboard') {
             $.ajax('/user/trips', { type: 'GET' }).then(function (data) {
                 $('#trips').html(data)
-            })
-        }
-        else {
-            $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
-                $('.carousel').html(data)
-                $('.carousel').carousel({
-                    onCycleTo: function (data) {
-                        // id of current slide in carousel
-                        var tripInfo = $(data).attr('id').split('/')
-
-                        $('#currentTrip').html('<h4>' + tripInfo[1] + '</h4><p>' + tripInfo[2] + '</p>');
-                        $('#currentTripLink').attr('href', '/trip/' + tripInfo[0])
-                    }
-                });
             })
         }
     }
