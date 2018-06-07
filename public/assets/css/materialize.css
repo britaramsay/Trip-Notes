@@ -1,5 +1,4 @@
 @charset "UTF-8";
-
 .materialize-red {
   background-color: #e51c23 !important;
 }
@@ -2194,15 +2193,6 @@ figure,
 main {
   /* 1 */
   display: block;
-}
-body {
-  display: flex !important;
-  min-height: 100vh !important;
-  flex-direction: column !important;
-}
-
-main {
-  flex: 1 0 auto !important;
 }
 
 /**
@@ -8071,7 +8061,7 @@ nav .brand-logo {
 }
 
 .nav-color {
-  background: #48c1d1;
+  background: linear-gradient(to right, #b2ebf2, #80deea, #ffccbc, #48c1d1);
 }
 
 .g-signin2 {
@@ -8128,9 +8118,8 @@ p {
 }
 
 #logo {
-  width: 100px;
+  width: 70px;
   height: auto;
-  margin: 5px 2px;
 }
 
 .container img {
