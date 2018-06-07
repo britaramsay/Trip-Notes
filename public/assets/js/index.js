@@ -15,6 +15,31 @@ $(document).ready(() => {
     // Initialize carousel
 
 
+    //initialize copy buttons
+    if (ClipboardJS.isSupported()) {
+        var clipboard = new ClipboardJS('.copy', {
+            text: function (trigger) {
+                // build absolute path to link
+                return absolutePath(trigger.getAttribute('data-link'));
+            }
+        });
+
+        // alert that link has been copied
+        clipboard.on('success', function (e) {
+            M.toast({ html: 'Copied to clipboard!' }, 4000)
+            e.clearSelection();
+        });
+
+        // on error, simply re-direct to link
+        clipboard.on('error', function (e) {
+            window.location.href = absolutePath(trigger.getAttribute('data-link'));
+        });
+        $('.copy').show();
+    } else {
+        $('.copy').hide();
+    }
+
+
     // Initialize Modals
     var elems = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elems, { onOpenStart: onNotesModalOpen, onCloseEnd: onNotesModalClosed })
@@ -63,7 +88,7 @@ function onNotesModalClosed(modal) {
 
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
-        if(window.location.href.split('/').pop() == 'dashboard') {
+        if (window.location.href.split('/').pop() == 'dashboard') {
             $.ajax('/user/trips', { type: 'GET' }).then(function (data) {
                 $('#trips').html(data)
             })
@@ -72,12 +97,12 @@ firebase.auth().onAuthStateChanged(function (user) {
             $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
                 $('.carousel').html(data)
                 $('.carousel').carousel({
-                    onCycleTo: function(data) {
+                    onCycleTo: function (data) {
                         // id of current slide in carousel
                         var tripInfo = $(data).attr('id').split('/')
 
-                        $('#currentTrip').html('<h4>'+tripInfo[1]+'</h4><p>'+tripInfo[2]+'</p>');
-                        $('#currentTripLink').attr('href', '/trip/'+tripInfo[0])
+                        $('#currentTrip').html('<h4>' + tripInfo[1] + '</h4><p>' + tripInfo[2] + '</p>');
+                        $('#currentTripLink').attr('href', '/trip/' + tripInfo[0])
                     }
                 });
             })
@@ -216,6 +241,12 @@ function uploadFile(file, signedRequest, url, key) {
 
         return url;
     });
+}
+
+function absolutePath(href) {
+    var link = document.createElement("a");
+    link.href = href;
+    return link.href;
 }
 
 $(document).on('click', '.locationBtn', function () {
