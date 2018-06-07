@@ -52,7 +52,7 @@ router.get('/dashboard', (req, res) => {
 
 router.get('/trips/public', (req, res) => {
     db.Trip.findAll({
-        where: { Private: false},
+        where: { Private: false },
         include: [
             {
                 model: db.Checkin,
@@ -60,7 +60,7 @@ router.get('/trips/public', (req, res) => {
             }
         ]
     }).then(trips => {
-        
+
         res.render('partials/trips',
             {
                 carousel: true,
@@ -110,8 +110,7 @@ function findFirstPhoto(trip) {
 
 // Find a trip based off of the encrypted key (user.id_trip.id)
 router.get('/trip/:key', (req, res) => {
-    let decryptedTrip = cryptr.decrypt(req.params.key).split('_').pop()
-    let tripOwner = cryptr.decrypt(req.params.key).split('_')[0] == req.cookies.userId
+    let [tripOwner, decryptedTrip] = cryptr.decrypt(req.params.key).split('_')
 
     db.Trip.findOne({
         where: { id: decryptedTrip }
@@ -122,17 +121,37 @@ router.get('/trip/:key', (req, res) => {
             where: { TripId: decryptedTrip },
             include: [db.Location, db.Note, db.Photo]
         }).then(checkins => {
-            res.render('trip', { trip: trip, owner: tripOwner, checkins: checkins.map(checkin => { checkin.owner = tripOwner, checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id); return checkin; }) })
+            res.render('trip', {
+                trip: trip,
+                owner: tripOwner === req.cookies.userId,
+                checkins: checkins.map(checkin => {
+                    checkin.owner = tripOwner === req.cookies.userId
+                    checkin.checkinKey = cryptr.encrypt(tripOwner + '_' + checkin.id)
+                    checkin.Notes.map(note => {
+                        note.noteKey = cryptr.encrypt(tripOwner + '_' + note.id)
+                        return note
+                    })
+                    checkin.Photos.map(photo => {
+                        photo.photoKey = cryptr.encrypt(tripOwner + '_' + photo.id)
+                        return photo
+                    })
+                    return checkin
+                })
+            })
         })
     })
 })
 
 // delete a Trip, Checkin, Photo, or Note (only user who owns can delete)
 router.delete('/:type/:key', (req, res) => {
+    // TODO: if type is Photo, we need to delete the image from AWS as well
+
     let [decryptedUser, decryptedObjId] = cryptr.decrypt(req.params.key).split('_')
 
     if (decryptedUser != req.cookies.userId) {
         res.status(401).end()
+    } else if (['Trip', 'Checkin', 'Note', 'Photo'].indexOf(req.params.type) == -1) {
+        res.status(501).end()
     } else {
         db[req.params.type].findOne({
             where: { id: decryptedObjId }
@@ -182,7 +201,7 @@ router.post('/newtrip', (req, res) => {
 })
 
 router.post('/newImage', (req, res) => {
-    let checkin = cryptr.decrypt(req.body.checkin).split('_').pop()
+    let [tripOwner, checkin] = cryptr.decrypt(req.body.checkin).split('_')
 
     db.Photo.count({
         where: { CheckinId: checkin }
@@ -192,7 +211,8 @@ router.post('/newImage', (req, res) => {
             Order: count + 1,
             CheckinId: checkin,
         }).then(photo => {
-            req.app.render('partials/photo', { photo: photo, layout: false }, (err, html) => {
+            photo.photoKey = cryptr.encrypt(tripOwner + '_' + photo.id)
+            req.app.render('partials/photo', { photo: photo, owner: true, layout: false }, (err, html) => {
                 if (err) {
                     res.status(500).end()
                 }
@@ -259,7 +279,7 @@ router.post('/checkinLocation', (req, res) => {
     let name = location.pop()
     let apiID = location.pop()
 
-    let tripId = cryptr.decrypt(req.body.trip).split('_').pop()
+    let [tripOwner, tripId] = cryptr.decrypt(req.body.trip).split('_')
 
     db.Checkin.count({
         where: {
@@ -286,6 +306,8 @@ router.post('/checkinLocation', (req, res) => {
             ).then(checkin => {
                 checkin.Location = location
                 checkin.checkinKey = cryptr.encrypt(req.cookies.userId + '_' + checkin.id)
+                checkin.owner = tripOwner === req.cookies.userId
+
                 // Save when you click on a check in for uploading photos after checked in?
                 res.cookie('checkIn', checkin.dataValues.id, { maxAge: 900000 });
 
@@ -313,7 +335,8 @@ router.post('/note', (req, res) => {
             Note: req.body.note,
             CheckinId: checkin
         }).then(note => {
-            req.app.render('partials/note', { note: note, layout: false }, (err, html) => {
+            note.noteKey = cryptr.encrypt(req.cookies.userId + '_' + note.id)
+            req.app.render('partials/note', { note: note, owner: true, layout: false }, (err, html) => {
                 if (err) {
                     res.status(500).end()
                 }
