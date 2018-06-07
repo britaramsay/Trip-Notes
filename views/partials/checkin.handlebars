@@ -1,24 +1,33 @@
-<div id="{{checkin.checkinKey}}">
-    <p>
+<div id="{{checkin.checkinKey}}">        
+    <h3>
         {{#if checkin.owner}}
             <i class="delete small material-icons text-darken-4" data-type="Checkin" data-key="{{checkin.checkinKey}}">delete</i>
         {{/if}}
-        
         {{checkin.Location.Name}}
-        
-        {{#if checkin.owner}}
-            <a class="waves-effect waves-light btn modal-trigger" href="#noteModal" data-key="{{checkin.checkinKey}}">Add Note</a>
-            <form class="imageUpload">
-                <input data-key="{{checkin.checkinKey}}" type="file" accept="image/*" />
-            </form>
-        {{/if}}
-    </p>
-         
+    </h3>
+    
+     
     <h5>Notes</h5>
+    {{#if checkin.owner}}
+        <a class="waves-effect waves-light btn modal-trigger" href="#noteModal" data-key="{{checkin.checkinKey}}">Add Note</a>
+    {{/if}}
     <ul class="notes" data-key="{{checkin.checkinKey}}">
         {{> notes notes=checkin.Notes owner=checkin.owner}}
     </ul>
     <h5>Photos</h5>
+    {{#if checkin.owner}}
+        <form class="imageUpload">
+            <div class="file-field input-field">
+                <div class="btn">
+                    <span>Add Photo</span>
+                    <input type="file" data-key="{{checkin.checkinKey}}" accept="image/*">
+                </div>
+                <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text" style="width:0%">
+                </div>
+            </div>
+        </form>
+    {{/if}}
     <div class="images row" data-key="{{checkin.checkinKey}}">
         {{> photos photos=checkin.Photos owner=checkin.owner}}
     </div>

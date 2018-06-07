@@ -35,7 +35,7 @@ $(document).on('click', '.delete', (event) => {
 });
 
 // Listen for a file to be uploaded
-$(".imageUpload").on('change', (event) => {
+$(document).on('change', 'input[type="file"]', (event) => {
     const files = event.target.files;
     const file = files[0];
     if (file == null) {
