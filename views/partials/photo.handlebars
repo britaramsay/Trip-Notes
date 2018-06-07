@@ -1,1 +1,12 @@
-<img src="{{photo.URL}}">
+<div id="{{photo.photoKey}}" class="col s12 m4">
+    <div class="card">
+        <div class="card-image">
+            <img src="{{photo.URL}}">
+        </div>
+        {{#if owner}}
+            <div class="card-action">
+                <i class="delete small material-icons text-darken-4" data-type="Photo" data-key="{{photo.photoKey}}">delete</i>
+            </div>
+        {{/if}}
+    </div>
+</div>

@@ -63,5 +63,4 @@ typings/
 # Google login with firebase
 public/assets/js/googleSignIn.js
 
-config/config.js
-
+todo
