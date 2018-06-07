@@ -31,6 +31,14 @@
  .sidenav-trigger {
    color: #26a69a;
  }
+
+ #slide-out-logo {
+  width: auto;
+  height:auto;
+ }
+//  #slide-out {
+//    background-color:linear-gradient(to right,#eeeeee,#ffccbc,#8adbf0, #e0f7fa)
+//  }
  
  .parallax-container {
    min-height: 380px;
@@ -84,7 +92,7 @@ body {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  background: linear-gradient(to right,#eeeeee, #e0f7fa);
+  background: linear-gradient(to right,#eeeeee,#ffccbc,#fffde7, #e0f7fa);
   color:#3e2723;
 }
 

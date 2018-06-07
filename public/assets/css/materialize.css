@@ -8081,6 +8081,11 @@ p {
   color: #26a69a;
 }
 
+#slide-out-logo {
+  width: auto;
+  height: auto;
+}
+
 .parallax-container {
   min-height: 380px;
   line-height: 0;
@@ -8114,7 +8119,6 @@ p {
 
 #logo {
   width: 100px;
-
   height: auto;
   margin: 5px 2px;
 }
@@ -8135,7 +8139,7 @@ body {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  background: linear-gradient(to right, #eeeeee, #e0f7fa);
+  background: linear-gradient(to right, #eeeeee, #ffccbc, #fffde7, #e0f7fa);
   color: #3e2723;
 }
 
@@ -8146,6 +8150,7 @@ main {
 .page-footer {
   background: #48c1d1;
 }
+
 .delete {
   cursor: pointer;
 }
