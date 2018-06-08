@@ -3,9 +3,8 @@
         {{> publictrip trip=this}} 
     {{/each}}
 {{/if}}
-{{owner}}
 {{#unless carousel}}
     {{#each trips}} 
-        {{> tripsummary trip=this owner=../owner}} 
+        {{> tripsummary trip=this}} 
     {{/each}}
 {{/unless}}
