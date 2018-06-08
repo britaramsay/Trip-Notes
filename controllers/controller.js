@@ -6,7 +6,9 @@ const express = require('express'),
     aws = require('aws-sdk'),
     S3_BUCKET = process.env.S3_BUCKET,
     Cryptr = require('cryptr'),
-    cryptr = new Cryptr(process.env.CRYPTR_KEY);
+    cryptr = new Cryptr(process.env.CRYPTR_KEY),
+    Op = db.Sequelize.Op
+
 
 aws.config.region = 'us-east-2';
 // We will set heroku config variables in the command line when we host it
@@ -353,6 +355,52 @@ router.post('/saveTrip', (req, res) => {
         UserId: req.cookies.userId,
         TripId: req.body.trip
     }).then((data) => { res.json(data) })
+})
+
+router.post('/trip/search', (req, res) => {
+    let searchQuery = 'cats'
+    var trips;
+    db.Trip.findAll({
+        where: { 
+            [Op.and]: {
+                Private: 0, 
+                [Op.or]: {
+                    Title: {[Op.like]: ['%' + searchQuery +'%']},
+                    Description: {[Op.like]: ['%' + searchQuery +'%']}
+                }
+            }
+        },
+    }).then(matches => {
+        trips = matches.map(match => {return {id: match.dataValues.id, title: match.dataValues.Title, description: match.dataValues.Description, tripLink: cryptr.encrypt(match.dataValues.UserId + '_' + match.dataValues.id)}})
+        console.log(trips)
+        
+    })
+    
+    db.Tag.findAll({
+        where: {Name: {[Op.like]: ['%' + searchQuery +'%']}},
+        include: [{model: db.Trip, where: {Private: 0}}]
+    }).then(tags => {
+        var tagsMatching = [];
+        tags.forEach(tag => {
+            var oneTag = tag.dataValues.Trips[0];
+            tag.dataValues.Trips.forEach(trip => {tagsMatching.push({id: trip.dataValues.id, title: trip.dataValues.Title, description: trip.dataValues.Description, tripLink: cryptr.encrypt(trip.dataValues.UserId + '_' + trip.dataValues.id)})})
+        })
+        console.log(trips)
+
+        tagsMatching.forEach(trip => {
+            trips.push(trip)
+        })
+
+        trips.filter(function (value, index) { 
+            console.log(trips.indexOf(value)) 
+            if(trips.indexOf(value) === index) {
+                console.log('hi')
+                return value;
+            }
+        })
+        console.log(trips)
+
+    })
 })
 
 module.exports = router;
