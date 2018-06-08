@@ -8086,6 +8086,13 @@ p {
   height: auto;
 }
 
+#slide-out {
+  background-color: linear-gradient(to right, #eeeeee, #ffccbc, #8adbf0, #e0f7fa !important);
+}
+#slide-out li {
+  background-color: linear-gradient(to right, #eeeeee, #ffccbc, #8adbf0, #e0f7fa !important);
+}
+
 .parallax-container {
   min-height: 380px;
   line-height: 0;
