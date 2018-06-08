@@ -23,18 +23,15 @@
                         <i class="material-icons">landscape</i>
                     </h2>
                     <h5 class="center">Explore and Share</h5>
-                    <p class="light">Trip Notes lets you share their vacation experiences with the world. With Trip Notes, you can can check in to places you visit throughout your trip, upload photos and notes for each location visited, and explore new fun places by searching publicly posted trips.  Whether to take notes of your memory as you go, or look for new places or hidden gems to explore, Trip Notes have you covered. </p>
+                    <p class="light">Trip Notes lets you share their vacation experiences with the world. With Trip Notes, you can can check
+                        in to places you visit throughout your trip, upload photos and notes for each location visited, and
+                        explore new fun places by searching publicly posted trips. Whether to take notes of your memory as
+                        you go, or look for new places or hidden gems to explore, Trip Notes have you covered. </p>
                 </div>
             </div>
-
-             
-            </div>
-
-       </div>
+        </div>
     </div>
-
-
-
+</div>
 
 <div class="parallax-container valign-wrapper">
     <div class="section no-pad-bot">
@@ -56,12 +53,21 @@
             <div class="row">
                 <div class="col s12">
                     
-                    <div class="carousel">
-                        {{>trips}}
-                    </div>
-                    <div id="currentTrip">
-                    </div>
-                    <a id='currentTripLink'>View</a>
+                    {{#if trips.length}}
+                        <div class="carousel">
+                            {{>trips}}
+                        </div>
+                        <div id="currentTrip">
+                        </div>
+                        <a id='currentTripLink'>View</a>
+                    {{else}}
+                        <div class="icon-block">
+                            <h2 class="center brown-text">
+                                <i class="material-icons">local_airport</i>
+                            </h2>
+                            <h5 class="center">Your next adventure awaits!</h5>
+                        </div>
+                    {{/if}}
                 </div>
             </div> 
 
