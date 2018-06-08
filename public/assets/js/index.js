@@ -60,7 +60,7 @@ $(document).ready(() => {
 
     // Initialize Modals
     var elems = document.querySelectorAll('.modal');
-    var instances = M.Modal.init(elems, { onOpenStart: onNotesModalOpen, onCloseEnd: onNotesModalClosed })
+    var instances = M.Modal.init(elems, { onOpenStart: onNotesModalOpen, onOpenEnd: onNotesModalOpened, onCloseEnd: onNotesModalClosed })
     var notesModalElement = document.querySelector('#noteModal');
     if (notesModalElement) {
         notesModal = M.Modal.getInstance(notesModalElement);
@@ -112,6 +112,9 @@ $(document).on('change', 'input[type="file"]', (event) => {
 
 function onNotesModalOpen(modal, trigger) {
     $('#noteModal button').attr('data-key', $(trigger).attr('data-key'));
+}
+function onNotesModalOpened(modal, trigger) {
+    $('#note').focus();
 }
 
 function onNotesModalClosed(modal) {
