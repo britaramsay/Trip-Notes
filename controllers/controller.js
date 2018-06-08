@@ -370,8 +370,14 @@ router.post('/trip/search', (req, res) => {
                 }
             }
         },
+<<<<<<< Updated upstream
     }).then(matches => {
         trips = matches.map(match => {return {id: match.dataValues.id, title: match.dataValues.Title, description: match.dataValues.Description, tripLink: cryptr.encrypt(match.dataValues.UserId + '_' + match.dataValues.id)}})
+=======
+        include: [{model: db.Checkin, include: [db.Photo]}]
+    }).then(matches => {
+        trips = matches.map(match => {return {id: match.dataValues.id, title: match.dataValues.Title, description: match.dataValues.Description, photo: findFirstPhoto(match), tripLink: cryptr.encrypt(match.dataValues.UserId + '_' + match.dataValues.id)}})
+>>>>>>> Stashed changes
         console.log(trips)
         
     })
@@ -383,6 +389,7 @@ router.post('/trip/search', (req, res) => {
         var tagsMatching = [];
         tags.forEach(tag => {
             var oneTag = tag.dataValues.Trips[0];
+<<<<<<< Updated upstream
             tag.dataValues.Trips.forEach(trip => {tagsMatching.push({id: trip.dataValues.id, title: trip.dataValues.Title, description: trip.dataValues.Description, tripLink: cryptr.encrypt(trip.dataValues.UserId + '_' + trip.dataValues.id)})})
         })
         console.log(trips)
@@ -400,6 +407,25 @@ router.post('/trip/search', (req, res) => {
         })
         console.log(trips)
 
+=======
+            tag.dataValues.Trips.forEach(trip => {tagsMatching.push(trip)})
+        })
+
+        tagsMatching.filter(function (value, index, self) { 
+            if(trips.indexOf(value) == -1) {
+                trips.push()
+            }
+        })
+        
+        res.render('partials/trips',
+            {
+                trips: trips.map(trip => {
+                    return trip
+                }), layout: false
+            }
+        )
+        console.log(trips)
+>>>>>>> Stashed changes
     })
 })
 

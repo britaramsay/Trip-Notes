@@ -46,6 +46,7 @@ $(document).ready(() => {
         notesModal = M.Modal.getInstance(notesModalElement);
     }
 
+<<<<<<< Updated upstream
     // if(window.location.href.split('/').pop() !== 'dashboard') {
         $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
             // Initialize carousel
@@ -59,8 +60,27 @@ $(document).ready(() => {
                     $('#currentTripLink').attr('href', '/trip/'+tripInfo[0])
                 }
             });
+=======
+    $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
+        $('.carousel').html(data)
+        $('.carousel').carousel({
+            onCycleTo: function(data) {
+                // id of current slide in carousel
+                var tripInfo = $(data).attr('id').split('/')
+
+                $('#currentTrip').html('<h4>'+tripInfo[1]+'</h4><p>'+tripInfo[2]+'</p>');
+                $('#currentTripLink').attr('href', '/trip/'+tripInfo[0])
+            }
+        });
+    })
+
+    $('#search').on('click', function () {  
+        $.post('/trip/search').then(function(data) {
+            $('#trips1').html(data)
+>>>>>>> Stashed changes
         })
-    // }
+    })
+   
 });
 
 $(document).on('click', '.delete', (event) => {

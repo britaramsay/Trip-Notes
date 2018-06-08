@@ -4,9 +4,9 @@
             <div class="row">
                 <h2>{{trip.Title}}</h2>
                 <p>{{trip.Description}}</p>
-
+                
+                <h3>Checkins</h3>
                 {{#if owner}}
-                    <h3>Checkins</h3>
                     <p>Check in with Geolocation</p>
                     <button class="waves-effect waves-light btn" onclick="getLocation('{{trip.Key}}')">Check In</button>
                     <div id='alert'></div>
