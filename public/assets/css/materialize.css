@@ -8155,6 +8155,9 @@ main {
 
 .page-footer {
   background: #48c1d1;
+  height: 16px;
+  color: #3e2723;
+  font-size: 5px;
 }
 
 .delete, .copy {

@@ -2,6 +2,8 @@ var notesModal;
 
 $(document).ready(() => {
 
+    //autoresize description
+     M.textareaAutoResize($('#description'));
 
     // date picker
     $('.datepicker').datepicker();
