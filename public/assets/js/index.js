@@ -14,6 +14,23 @@ $(document).ready(() => {
         // die silently
     }
 
+    // initialize tags
+    $('.chips-autocomplete').chips({
+        placeholder: 'Enter a tag',
+        secondaryPlaceholder: '+Tag',
+        onChipAdd: onTagged,
+        autocompleteOptions: {
+            data: {
+                'Orlando': null,
+                'theme parks': null,
+                'beach': null,
+                'food': null
+            },
+            limit: Infinity,
+            minLength: 1
+        }
+    });
+
     //initialize copy buttons
     if (ClipboardJS.isSupported()) {
         var clipboard = new ClipboardJS('.copy', {
@@ -47,19 +64,19 @@ $(document).ready(() => {
     }
 
     // if(window.location.href.split('/').pop() !== 'dashboard') {
-        $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
-            // Initialize carousel
-            $('.carousel').html(data)
-            $('.carousel').carousel({
-                onCycleTo: function(data) {
-                    // id of current slide in carousel
-                    var tripInfo = $(data).attr('id').split('/')
+    $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
+        // Initialize carousel
+        $('.carousel').html(data)
+        $('.carousel').carousel({
+            onCycleTo: function (data) {
+                // id of current slide in carousel
+                var tripInfo = $(data).attr('id').split('/')
 
-                    $('#currentTrip').html('<h4>'+tripInfo[1]+'</h4><p>'+tripInfo[2]+'</p>');
-                    $('#currentTripLink').attr('href', '/trip/'+tripInfo[0])
-                }
-            });
-        })
+                $('#currentTrip').html('<h4>' + tripInfo[1] + '</h4><p>' + tripInfo[2] + '</p>');
+                $('#currentTripLink').attr('href', '/trip/' + tripInfo[0])
+            }
+        });
+    })
     // }
 });
 
@@ -247,6 +264,30 @@ function absolutePath(href) {
     var link = document.createElement("a");
     link.href = href;
     return link.href;
+}
+
+function onTagged(event, chip) {
+    var body = {
+        key: $('.chips').attr('data-key'),
+        tag: chip.firstChild.data.trim()
+    };
+    $.post('/trip/tag', body).then(function(data) {
+        if(!data) {
+            $(chip).remove()
+        }
+    })
+
+}
+
+function onUntagged(event, chip) {
+    console.log('DELETE CHIP')
+    console.log(event)
+    console.log(chip)
+    // var body = {
+    //     key: $('.chips').attr('data-key'),
+    //     tag: chip.firstChild.data.trim()
+    // };
+    // console.log(body)
 }
 
 $(document).on('click', '.locationBtn', function () {
