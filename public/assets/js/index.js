@@ -3,7 +3,7 @@ var notesModal;
 $(document).ready(() => {
 
     //autoresize description
-     M.textareaAutoResize($('#description'));
+    M.textareaAutoResize($('#description'));
 
     // date picker
     $('.datepicker').datepicker();
@@ -13,6 +13,24 @@ $(document).ready(() => {
     } catch (e) {
         // die silently
     }
+
+    // initialize tags
+    $('.chips-autocomplete').chips({
+        placeholder: 'Enter a tag',
+        secondaryPlaceholder: '+Tag',
+        onChipAdd: onTagged,
+        onChipDelete: onUntagged,
+        autocompleteOptions: {
+            data: {
+                'Orlando': null,
+                'theme parks': null,
+                'beach': null,
+                'food': null
+            },
+            limit: Infinity,
+            minLength: 1
+        }
+    });
 
     //initialize copy buttons
     if (ClipboardJS.isSupported()) {
@@ -47,19 +65,19 @@ $(document).ready(() => {
     }
 
     // if(window.location.href.split('/').pop() !== 'dashboard') {
-        $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
-            // Initialize carousel
-            $('.carousel').html(data)
-            $('.carousel').carousel({
-                onCycleTo: function(data) {
-                    // id of current slide in carousel
-                    var tripInfo = $(data).attr('id').split('/')
+    $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
+        // Initialize carousel
+        $('.carousel').html(data)
+        $('.carousel').carousel({
+            onCycleTo: function (data) {
+                // id of current slide in carousel
+                var tripInfo = $(data).attr('id').split('/')
 
-                    $('#currentTrip').html('<h4>'+tripInfo[1]+'</h4><p>'+tripInfo[2]+'</p>');
-                    $('#currentTripLink').attr('href', '/trip/'+tripInfo[0])
-                }
-            });
-        })
+                $('#currentTrip').html('<h4>' + tripInfo[1] + '</h4><p>' + tripInfo[2] + '</p>');
+                $('#currentTripLink').attr('href', '/trip/' + tripInfo[0])
+            }
+        });
+    })
     // }
 });
 
@@ -247,6 +265,34 @@ function absolutePath(href) {
     var link = document.createElement("a");
     link.href = href;
     return link.href;
+}
+
+function onTagged(event, chip) {
+    var body = {
+        key: $('.chips').attr('data-key'),
+        tag: chip.firstChild.data.trim()
+    };
+    $.post('/trip/tag', body).then(function (data) {
+        if (!data) {
+            $(chip).remove()
+        }
+    })
+
+}
+
+function onUntagged(event, chip) {
+    console.log('DELETE CHIP')
+    console.log(event)
+    console.log(chip)
+    if (chip) {
+        var body = {
+            key: $('.chips').attr('data-key'),
+            tag: chip.firstChild.data.trim()
+        };
+        $.ajax('/trip/tag/' + $('.chips').attr('data-key') + '/' + chip.firstChild.data.trim(), { type: 'DELETE'}).then(function (data) {
+
+        })
+    }
 }
 
 $(document).on('click', '.locationBtn', function () {

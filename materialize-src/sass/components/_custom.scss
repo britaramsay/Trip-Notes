@@ -106,7 +106,7 @@ main {
   background: #48c1d1;
   height:16px;
   color:#3e2723;
-  font-size:5px;
+  
 }
 
 .delete, .copy {
@@ -117,6 +117,15 @@ main {
   color:#48c1d1 !important;
 }
  
+
+.nav-wrapper form #search{
+  height: 50px;
+  margin:3px;
+  padding:5px;
+}
+
+
+
 @media only screen and (max-width : 992px) {
     .parallax-container .section {
       position: absolute;
