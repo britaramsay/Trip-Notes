@@ -4,6 +4,10 @@
             <div class="row">
                 <h2>{{trip.Title}}</h2>
                 <p>{{trip.Description}}</p>
+                
+                <div class="chips chips-autocomplete" data-key="{{trip.key}}">
+                    {{>tags tags=tags owner=owner}}
+                </div>
 
                 {{#if owner}}
                     <h3>Checkins</h3>
