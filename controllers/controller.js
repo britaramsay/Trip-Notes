@@ -93,8 +93,10 @@ router.get('/user/trips', (req, res) => {
                 trips: trips.map(trip => {
                     trip.photo = findFirstPhoto(trip)
                     trip.tripLink = cryptr.encrypt(req.cookies.userId + '_' + trip.id)
+                    trip.owner = req.cookies.userId == trip.UserId                    
                     return trip
-                }), layout: false
+                }),
+                layout: false
             }
         )
     })
@@ -416,7 +418,7 @@ router.post('/saveTrip', (req, res) => {
 })
 
 router.post('/trip/search', (req, res) => {
-    let searchQuery = 'cats'
+    let searchQuery = req.body.search
     var trips;
     db.Trip.findAll({
         where: { 
@@ -428,36 +430,44 @@ router.post('/trip/search', (req, res) => {
                 }
             }
         },
+        include: [{model: db.Checkin, include: [db.Photo]}]
     }).then(matches => {
-        trips = matches.map(match => {return {id: match.dataValues.id, title: match.dataValues.Title, description: match.dataValues.Description, tripLink: cryptr.encrypt(match.dataValues.UserId + '_' + match.dataValues.id)}})
-        console.log(trips)
-        
+        trips = matches.map(match => {return {id: match.dataValues.id, owner: req.cookies.userId == match.dataValues.UserId, Title: match.dataValues.Title, Description: match.dataValues.Description, photo: findFirstPhoto(match), tripLink: cryptr.encrypt(match.dataValues.UserId + '_' + match.dataValues.id)}})
     })
     
     db.Tag.findAll({
         where: {Name: {[Op.like]: ['%' + searchQuery +'%']}},
-        include: [{model: db.Trip, where: {Private: 0}}]
+        include: [{
+            model: db.Trip, 
+            where: { Private: 0 }, 
+            include: [{
+                model: db.Checkin, 
+                include: [db.Photo]
+            }]
+        }]
     }).then(tags => {
         var tagsMatching = [];
         tags.forEach(tag => {
             var oneTag = tag.dataValues.Trips[0];
-            tag.dataValues.Trips.forEach(trip => {tagsMatching.push({id: trip.dataValues.id, title: trip.dataValues.Title, description: trip.dataValues.Description, tripLink: cryptr.encrypt(trip.dataValues.UserId + '_' + trip.dataValues.id)})})
-        })
-        console.log(trips)
-
-        tagsMatching.forEach(trip => {
-            trips.push(trip)
+            tag.dataValues.Trips.forEach(trip => {tagsMatching.push({id: trip.dataValues.id, owner: req.cookies.userId == trip.dataValues.UserId, Title: trip.dataValues.Title, Description: trip.dataValues.Description, photo: findFirstPhoto(trip), tripLink: cryptr.encrypt(trip.dataValues.UserId + '_' + trip.dataValues.id)})})
         })
 
-        trips.filter(function (value, index) { 
-            console.log(trips.indexOf(value)) 
-            if(trips.indexOf(value) === index) {
-                console.log('hi')
-                return value;
+        function findDuplicateTrip(array, attr, value) {
+            for(var i = 0; i < array.length; i++) {
+                if(array[i][attr] === value) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        tagsMatching.filter(function (value, index, self) { 
+            if(findDuplicateTrip(trips, 'id', value.id) == -1){
+                trips.push(value)
             }
         })
         console.log(trips)
-
+        res.render('searchTrips', {trips: trips})
     })
 })
 

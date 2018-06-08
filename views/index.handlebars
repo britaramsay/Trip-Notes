@@ -3,10 +3,6 @@
         <div class="container">
             <div class="row">
                 <h2 class="brown-text darken-4">My Trips</h2>
-                {{!-- <p class='saveTrip' data-id='1'>Trip 1</p>
-                <p class='saveTrip' data-id='2'>Trip 2</p>
-                <p class='saveTrip' data-id='3'>Trip 3</p> --}}
-                <!-- Toggle new trip form -->
                 
                 <div class="card-panel cyan lighten-3 brown-text">Add a New Trip</div>
 
@@ -18,7 +14,7 @@
                             <label for="title">Title</label>
                         </div>
 
-                    {{!-- Set to Private for not searchable --}}
+                        {{!-- Set to Private for not searchable --}}
                         <div class="input-field col s12 m4">
                             <label>
                                 <input id='private' name="private" type="checkbox" class="filled-in"/>
@@ -37,21 +33,13 @@
                             </form>
                         </div>
                     </div>
-                      
 
-
-
-                        {{!-- add Description/notes of the trips --}}
+                    {{!-- add Description/notes of the trips --}}
                     <div class="row">
                         <div class="input-field col s12 m12">
-                            {{!-- <input id="description" type="text" class="validate"> --}}
-                            
-                             <textarea id="description" class="materialize-textarea"></textarea>
-                             <label for="description">Description</label>
-                            
+                            <textarea id="description" class="materialize-textarea"></textarea>
+                            <label for="description">Description</label>
                         </div>
-                        
-                        
                     </div>
                     <div class="row">
                         <button class="btn waves-effect waves-light submit-trip" type="submit" name="submit">Add</button>
@@ -60,9 +48,9 @@
             </div>
             <div class="row" id="trips">
                 <div class="col s12">
-                {{>trips}}
+                    {{>trips}}
                 </div>
-                </div>
+            </div>
         </div>
     </div>
 </div>
