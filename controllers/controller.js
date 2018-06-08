@@ -212,7 +212,6 @@ router.post('/trip/tag', (req, res) => {
     let [tripOwner, tripId] = cryptr.decrypt(req.body.key).split('_'),
         tag = req.body.tag
 
-    console.log(req.body)
     if (tripOwner !== req.cookies.userId) {
         return res.status(401).end()
     }
@@ -240,6 +239,23 @@ router.post('/trip/tag', (req, res) => {
 
 
     })
+})
+
+router.delete('/trip/tag/:key/:tag', (req, res) => {
+    let [tripOwner, tripId] = cryptr.decrypt(req.params.key).split('_'),
+        tag = req.params.tag
+
+    if (tripOwner !== req.cookies.userId) {
+        return res.status(401).end()
+    }
+
+    db.Tag.findOne({ where: { Name: tag } }).then(tag => {
+        db.TripTag.findOne({ where: { TripId: tripId, TagId: tag.id } }).then(tripTag => {
+            tripTag.destroy()
+            res.send(200).end()
+        })
+    })
+
 })
 
 router.post('/newImage', (req, res) => {

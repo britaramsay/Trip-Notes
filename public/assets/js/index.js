@@ -3,7 +3,7 @@ var notesModal;
 $(document).ready(() => {
 
     //autoresize description
-     M.textareaAutoResize($('#description'));
+    M.textareaAutoResize($('#description'));
 
     // date picker
     $('.datepicker').datepicker();
@@ -19,6 +19,7 @@ $(document).ready(() => {
         placeholder: 'Enter a tag',
         secondaryPlaceholder: '+Tag',
         onChipAdd: onTagged,
+        onChipDelete: onUntagged,
         autocompleteOptions: {
             data: {
                 'Orlando': null,
@@ -271,8 +272,8 @@ function onTagged(event, chip) {
         key: $('.chips').attr('data-key'),
         tag: chip.firstChild.data.trim()
     };
-    $.post('/trip/tag', body).then(function(data) {
-        if(!data) {
+    $.post('/trip/tag', body).then(function (data) {
+        if (!data) {
             $(chip).remove()
         }
     })
@@ -283,11 +284,15 @@ function onUntagged(event, chip) {
     console.log('DELETE CHIP')
     console.log(event)
     console.log(chip)
-    // var body = {
-    //     key: $('.chips').attr('data-key'),
-    //     tag: chip.firstChild.data.trim()
-    // };
-    // console.log(body)
+    if (chip) {
+        var body = {
+            key: $('.chips').attr('data-key'),
+            tag: chip.firstChild.data.trim()
+        };
+        $.ajax('/trip/tag/' + $('.chips').attr('data-key') + '/' + chip.firstChild.data.trim(), { type: 'DELETE'}).then(function (data) {
+
+        })
+    }
 }
 
 $(document).on('click', '.locationBtn', function () {
