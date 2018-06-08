@@ -3,7 +3,9 @@ var notesModal;
 $(document).ready(() => {
 
     //autoresize description
-    M.textareaAutoResize($('#description'));
+    if ($('#description').length) {
+        M.textareaAutoResize($('#description'));
+    }
 
     // date picker
     $('.datepicker').datepicker();
@@ -272,12 +274,11 @@ function onTagged(event, chip) {
         key: $('.chips').attr('data-key'),
         tag: chip.firstChild.data.trim()
     };
-    $.post('/trip/tag', body).then(function (data) {
-        if (!data) {
+    $.post('/trip/tag', body).then(function (added) {
+        if (!added) {
             $(chip).remove()
         }
     })
-
 }
 
 function onUntagged(event, chip) {
@@ -289,7 +290,7 @@ function onUntagged(event, chip) {
             key: $('.chips').attr('data-key'),
             tag: chip.firstChild.data.trim()
         };
-        $.ajax('/trip/tag/' + $('.chips').attr('data-key') + '/' + chip.firstChild.data.trim(), { type: 'DELETE'}).then(function (data) {
+        $.ajax('/trip/tag/' + $('.chips').attr('data-key') + '/' + chip.firstChild.data.trim(), { type: 'DELETE' }).then(function (data) {
 
         })
     }

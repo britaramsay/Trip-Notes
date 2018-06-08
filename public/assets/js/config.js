@@ -6,8 +6,6 @@ var config = {
 firebase.initializeApp(config);
 
 function onSignIn(googleUser) {
-    console.log('Google Auth Response', googleUser);
-
     // Google idtoken
     var id_token = googleUser.getAuthResponse().id_token
 
@@ -62,12 +60,11 @@ firebase.auth().onAuthStateChanged(function (user) {
 
         // find or create user
         $.ajax('/user/' + uid, { type: 'GET' }).then(function (data) {
-            console.log('data', data);
+            $('#username').text(displayName);
+            $('#email').text(email);
+            $('#userlogo').attr('src', photoURL)
         });
 
-        $('#username').text(displayName);
-        $('#email').text(email);
-        $('#userlogo').attr('src', photoURL)
 
     } else {
         // User is signed out. Hide signout button
