@@ -5,11 +5,15 @@
                 <h2>{{trip.Title}}</h2>
                 <p>{{trip.Description}}</p>
                 
-                <div class="chips chips-autocomplete" data-key="{{trip.key}}">
+                {{#unless owner}}
                     {{>tags tags=tags owner=owner}}
-                </div>
-
+                {{/unless}}
+                
                 {{#if owner}}
+                    <div class="chips chips-autocomplete" data-key="{{trip.key}}">
+                        {{>tags tags=tags owner=owner}}
+                    </div>
+
                     <p>Check in with Geolocation</p>
                     <button class="waves-effect waves-light btn" onclick="getLocation('{{trip.Key}}')">Check In</button>
                     <div id='alert'></div>
