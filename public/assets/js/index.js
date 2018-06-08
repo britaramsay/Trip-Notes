@@ -64,22 +64,29 @@ $(document).ready(() => {
         notesModal = M.Modal.getInstance(notesModalElement);
     }
 
-    // if(window.location.href.split('/').pop() !== 'dashboard') {
+
     $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
         // Initialize carousel
         $('.carousel').html(data)
         $('.carousel').carousel({
-            onCycleTo: function (data) {
+            onCycleTo: function(data) {
                 // id of current slide in carousel
                 var tripInfo = $(data).attr('id').split('/')
 
-                $('#currentTrip').html('<h4>' + tripInfo[1] + '</h4><p>' + tripInfo[2] + '</p>');
-                $('#currentTripLink').attr('href', '/trip/' + tripInfo[0])
+                $('#currentTrip').html('<h4>'+tripInfo[1]+'</h4><p>'+tripInfo[2]+'</p>');
+                $('#currentTripLink').attr('href', '/trip/'+tripInfo[0])
             }
         });
     })
-    // }
+
+   
 });
+
+ $(document).on('click', '#search', function () {  
+    $.post('/trip/search').then(function(data) {
+        $('#trips1').html(data)
+    })
+})
 
 $(document).on('click', '.delete', (event) => {
     $.ajax('/' + $(event.target).attr('data-type') + '/' + $(event.target).attr('data-key'), { type: 'DELETE' }).then(function (data) {
@@ -296,7 +303,6 @@ function onUntagged(event, chip) {
 }
 
 $(document).on('click', '.locationBtn', function () {
-    console.log()
     $.post('/checkinLocation', { location: $(this).attr('data-key'), trip: $('#tripKey').val() }).then((data) => {
         M.toast({ html: 'Checked in to ' + data.name }, 4000);
         $('#checkins').append(data.html);

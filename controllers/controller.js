@@ -6,7 +6,9 @@ const express = require('express'),
     aws = require('aws-sdk'),
     S3_BUCKET = process.env.S3_BUCKET,
     Cryptr = require('cryptr'),
-    cryptr = new Cryptr(process.env.CRYPTR_KEY);
+    cryptr = new Cryptr(process.env.CRYPTR_KEY),
+    Op = db.Sequelize.Op
+
 
 aws.config.region = 'us-east-2';
 // We will set heroku config variables in the command line when we host it
@@ -411,6 +413,52 @@ router.post('/saveTrip', (req, res) => {
         UserId: req.cookies.userId,
         TripId: req.body.trip
     }).then((data) => { res.json(data) })
+})
+
+router.post('/trip/search', (req, res) => {
+    let searchQuery = req.body.search
+    var trips;
+    db.Trip.findAll({
+        where: { 
+            [Op.and]: {
+                Private: 0, 
+                [Op.or]: {
+                    Title: {[Op.like]: ['%' + searchQuery +'%']},
+                    Description: {[Op.like]: ['%' + searchQuery +'%']}
+                }
+            }
+        },
+        include: [{model: db.Checkin, include: [db.Photo]}]
+    }).then(matches => {
+        trips = matches.map(match => {return {id: match.dataValues.id, Title: match.dataValues.Title, Description: match.dataValues.Description, photo: findFirstPhoto(match), tripLink: cryptr.encrypt(match.dataValues.UserId + '_' + match.dataValues.id)}})
+    })
+    
+    db.Tag.findAll({
+        where: {Name: {[Op.like]: ['%' + searchQuery +'%']}},
+        include: [{model: db.Trip, where: {Private: 0}, include: [{model: db.Checkin, include: [db.Photo]}]}]
+    }).then(tags => {
+        var tagsMatching = [];
+        tags.forEach(tag => {
+            var oneTag = tag.dataValues.Trips[0];
+            tag.dataValues.Trips.forEach(trip => {tagsMatching.push({id: trip.dataValues.id, Title: trip.dataValues.Title, Description: trip.dataValues.Description, photo: findFirstPhoto(trip), tripLink: cryptr.encrypt(trip.dataValues.UserId + '_' + trip.dataValues.id)})})
+        })
+
+        tagsMatching.filter(function (value, index, self) { 
+            if(trips.indexOf(value) == -1) {
+                trips.push(value)
+            }
+        })
+        
+        res.render('partials/trips',
+            {
+                trips: trips.map(trip => {
+                    return trip
+                })
+                // , layout: false
+            }
+        )
+        console.log(trips)
+    })
 })
 
 module.exports = router;
