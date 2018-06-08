@@ -115,18 +115,24 @@ router.get('/trip/:key', (req, res) => {
     let [tripOwner, decryptedTrip] = cryptr.decrypt(req.params.key).split('_')
 
     db.Trip.findOne({
-        where: { id: decryptedTrip }
+        where: { id: decryptedTrip },
+        include: [
+            {
+                model: db.Checkin,
+                include: [db.Location, db.Note, db.Photo]
+            }
+        ]
     }).then(trip => {
         trip.key = req.params.key
-
-        db.Checkin.findAll({
-            where: { TripId: decryptedTrip },
-            include: [db.Location, db.Note, db.Photo]
-        }).then(checkins => {
+        db.sequelize.query(`select Tags.* FROM TripTags
+        INNER JOIN Tags on Tags.id = TripTags.TagId
+        WHERE TripTags.TripId = ` + trip.id, { model: db.Tag }
+        ).then(tags => {
             res.render('trip', {
                 trip: trip,
                 owner: tripOwner === req.cookies.userId,
-                checkins: checkins.map(checkin => {
+                tags: tags,
+                checkins: trip.Checkins.map(checkin => {
                     checkin.owner = tripOwner === req.cookies.userId
                     checkin.checkinKey = cryptr.encrypt(tripOwner + '_' + checkin.id)
                     checkin.Notes.map(note => {
@@ -141,6 +147,7 @@ router.get('/trip/:key', (req, res) => {
                 })
             })
         })
+
     })
 })
 
@@ -200,6 +207,57 @@ router.post('/newtrip', (req, res) => {
         })
 
     })
+})
+
+// add a tag to a trip
+router.post('/trip/tag', (req, res) => {
+    let [tripOwner, tripId] = cryptr.decrypt(req.body.key).split('_'),
+        tag = req.body.tag
+
+    if (tripOwner !== req.cookies.userId) {
+        return res.status(401).end()
+    }
+
+
+    db.Tag.findOrCreate({
+        where: {
+            Name: tag
+        }
+    }).spread((tag, created) => {
+        db.TripTag.count({ where: { TripId: tripId, TagId: tag.id } }).then(count => {
+            if (!count) {
+                db.TripTag.create(
+                    {
+                        TripId: tripId,
+                        TagId: tag.id
+                    }
+                ).then(tripTag => {
+                    res.json(true)
+                })
+            } else {
+                res.json(false)
+            }
+        })
+
+
+    })
+})
+
+router.delete('/trip/tag/:key/:tag', (req, res) => {
+    let [tripOwner, tripId] = cryptr.decrypt(req.params.key).split('_'),
+        tag = req.params.tag
+
+    if (tripOwner !== req.cookies.userId) {
+        return res.status(401).end()
+    }
+
+    db.Tag.findOne({ where: { Name: tag } }).then(tag => {
+        db.TripTag.findOne({ where: { TripId: tripId, TagId: tag.id } }).then(tripTag => {
+            tripTag.destroy()
+            res.send(200).end()
+        })
+    })
+
 })
 
 router.post('/newImage', (req, res) => {
@@ -358,7 +416,7 @@ router.post('/saveTrip', (req, res) => {
 })
 
 router.post('/trip/search', (req, res) => {
-    let searchQuery = 'cats'
+    let searchQuery = req.body.search
     var trips;
     db.Trip.findAll({
         where: { 
@@ -370,50 +428,24 @@ router.post('/trip/search', (req, res) => {
                 }
             }
         },
-<<<<<<< Updated upstream
-    }).then(matches => {
-        trips = matches.map(match => {return {id: match.dataValues.id, title: match.dataValues.Title, description: match.dataValues.Description, tripLink: cryptr.encrypt(match.dataValues.UserId + '_' + match.dataValues.id)}})
-=======
         include: [{model: db.Checkin, include: [db.Photo]}]
     }).then(matches => {
-        trips = matches.map(match => {return {id: match.dataValues.id, title: match.dataValues.Title, description: match.dataValues.Description, photo: findFirstPhoto(match), tripLink: cryptr.encrypt(match.dataValues.UserId + '_' + match.dataValues.id)}})
->>>>>>> Stashed changes
-        console.log(trips)
-        
+        trips = matches.map(match => {return {id: match.dataValues.id, Title: match.dataValues.Title, Description: match.dataValues.Description, photo: findFirstPhoto(match), tripLink: cryptr.encrypt(match.dataValues.UserId + '_' + match.dataValues.id)}})
     })
     
     db.Tag.findAll({
         where: {Name: {[Op.like]: ['%' + searchQuery +'%']}},
-        include: [{model: db.Trip, where: {Private: 0}}]
+        include: [{model: db.Trip, where: {Private: 0}, include: [{model: db.Checkin, include: [db.Photo]}]}]
     }).then(tags => {
         var tagsMatching = [];
         tags.forEach(tag => {
             var oneTag = tag.dataValues.Trips[0];
-<<<<<<< Updated upstream
-            tag.dataValues.Trips.forEach(trip => {tagsMatching.push({id: trip.dataValues.id, title: trip.dataValues.Title, description: trip.dataValues.Description, tripLink: cryptr.encrypt(trip.dataValues.UserId + '_' + trip.dataValues.id)})})
-        })
-        console.log(trips)
-
-        tagsMatching.forEach(trip => {
-            trips.push(trip)
-        })
-
-        trips.filter(function (value, index) { 
-            console.log(trips.indexOf(value)) 
-            if(trips.indexOf(value) === index) {
-                console.log('hi')
-                return value;
-            }
-        })
-        console.log(trips)
-
-=======
-            tag.dataValues.Trips.forEach(trip => {tagsMatching.push(trip)})
+            tag.dataValues.Trips.forEach(trip => {tagsMatching.push({id: trip.dataValues.id, Title: trip.dataValues.Title, Description: trip.dataValues.Description, photo: findFirstPhoto(trip), tripLink: cryptr.encrypt(trip.dataValues.UserId + '_' + trip.dataValues.id)})})
         })
 
         tagsMatching.filter(function (value, index, self) { 
             if(trips.indexOf(value) == -1) {
-                trips.push()
+                trips.push(value)
             }
         })
         
@@ -421,11 +453,11 @@ router.post('/trip/search', (req, res) => {
             {
                 trips: trips.map(trip => {
                     return trip
-                }), layout: false
+                })
+                // , layout: false
             }
         )
         console.log(trips)
->>>>>>> Stashed changes
     })
 })
 
