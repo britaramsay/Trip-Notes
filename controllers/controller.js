@@ -94,7 +94,9 @@ router.get('/user/trips', (req, res) => {
                     trip.photo = findFirstPhoto(trip)
                     trip.tripLink = cryptr.encrypt(req.cookies.userId + '_' + trip.id)
                     return trip
-                }), layout: false
+                }),
+                owner: true, 
+                layout: false
             }
         )
     })
@@ -465,7 +467,7 @@ router.post('/trip/search', (req, res) => {
             }
         })
         
-        res.render('searchTrips', {trips: trips})
+        res.render('searchTrips', {trips: trips, owner: false})
     })
 })
 
