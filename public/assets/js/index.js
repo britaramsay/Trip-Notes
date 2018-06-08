@@ -78,15 +78,7 @@ $(document).ready(() => {
             }
         });
     })
-
-   
 });
-// // call this instead of form action
-//  $(document).on('click', '#search', function () {  
-//     $.post('/trip/search').then(function(data) {
-//         $('#trips1').html(data)
-//     })
-// })
 
 $(document).on('click', '.delete', (event) => {
     $.ajax('/' + $(event.target).attr('data-type') + '/' + $(event.target).attr('data-key'), { type: 'DELETE' }).then(function (data) {
@@ -146,6 +138,7 @@ $('#newtrip-form').submit(function (event) {
     var newTrip = {
         uid: firebase.auth().currentUser.uid,
         title: $('#title').val().trim(),
+        date: $('#date').val(),
         description: $('#description').val().trim(),
         private: $('#private').is(":checked")
     };

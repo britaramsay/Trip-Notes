@@ -10,6 +10,9 @@ module.exports = function (sequelize, DataTypes) {
         Description: {
             type: DataTypes.STRING
         },
+        Date: {
+            type: DataTypes.DATE
+        },
         Private: {
             type: DataTypes.BOOLEAN,
             allowNull: false,

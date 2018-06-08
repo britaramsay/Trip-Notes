@@ -7,7 +7,8 @@ const express = require('express'),
     S3_BUCKET = process.env.S3_BUCKET,
     Cryptr = require('cryptr'),
     cryptr = new Cryptr(process.env.CRYPTR_KEY),
-    Op = db.Sequelize.Op
+    Op = db.Sequelize.Op,
+    moment = require('moment')
 
 
 aws.config.region = 'us-east-2';
@@ -91,6 +92,7 @@ router.get('/user/trips', (req, res) => {
         res.render('partials/trips',
             {
                 trips: trips.map(trip => {
+                    trip.date = moment(trip.Date).format("MMM Do YY")
                     trip.photo = findFirstPhoto(trip)
                     trip.tripLink = cryptr.encrypt(req.cookies.userId + '_' + trip.id)
                     trip.owner = req.cookies.userId == trip.UserId                    
@@ -125,6 +127,7 @@ router.get('/trip/:key', (req, res) => {
             }
         ]
     }).then(trip => {
+        trip.date = moment(trip.Date).format("MMM Do YY")
         trip.key = req.params.key
         db.sequelize.query(`select Tags.* FROM TripTags
         INNER JOIN Tags on Tags.id = TripTags.TagId
@@ -191,13 +194,17 @@ router.get('/user/:uid', (req, res) => {
 
 // Find user id of the current user and create a new trip
 router.post('/newtrip', (req, res) => {
+    console.log(req.body)
     db.Trip.create({
         UserId: req.cookies.userId,
         Title: req.body.title,
+        Date: req.body.date,
         Description: req.body.description,
         Private: req.body.private
     }).then(trip => {
+        trip.date = moment(trip.Date).format("MMM Do YY");               
         trip.tripLink = cryptr.encrypt(req.cookies.userId + '_' + trip.id)
+        trip.owner = true
 
         req.app.render('partials/tripsummary', { trip: trip, layout: false }, (err, html) => {
             if (err) {
@@ -432,7 +439,7 @@ router.post('/trip/search', (req, res) => {
         },
         include: [{model: db.Checkin, include: [db.Photo]}]
     }).then(matches => {
-        trips = matches.map(match => {return {id: match.dataValues.id, owner: req.cookies.userId == match.dataValues.UserId, Title: match.dataValues.Title, Description: match.dataValues.Description, photo: findFirstPhoto(match), tripLink: cryptr.encrypt(match.dataValues.UserId + '_' + match.dataValues.id)}})
+        trips = matches.map(match => {return {id: match.dataValues.id, owner: req.cookies.userId == match.dataValues.UserId, Title: match.dataValues.Title, date: moment(match.dataValues.Date).format("MMM Do YY"), Description: match.dataValues.Description, photo: findFirstPhoto(match), tripLink: cryptr.encrypt(match.dataValues.UserId + '_' + match.dataValues.id)}})
     })
     
     db.Tag.findAll({
@@ -449,7 +456,7 @@ router.post('/trip/search', (req, res) => {
         var tagsMatching = [];
         tags.forEach(tag => {
             var oneTag = tag.dataValues.Trips[0];
-            tag.dataValues.Trips.forEach(trip => {tagsMatching.push({id: trip.dataValues.id, owner: req.cookies.userId == trip.dataValues.UserId, Title: trip.dataValues.Title, Description: trip.dataValues.Description, photo: findFirstPhoto(trip), tripLink: cryptr.encrypt(trip.dataValues.UserId + '_' + trip.dataValues.id)})})
+            tag.dataValues.Trips.forEach(trip => {tagsMatching.push({id: trip.dataValues.id, owner: req.cookies.userId == trip.dataValues.UserId, Title: trip.dataValues.Title, date: moment(trip.dataValues.Date).format("MMM Do YY"), Description: trip.dataValues.Description, photo: findFirstPhoto(trip), tripLink: cryptr.encrypt(trip.dataValues.UserId + '_' + trip.dataValues.id)})})
         })
 
         function findDuplicateTrip(array, attr, value) {
