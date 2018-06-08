@@ -15,7 +15,7 @@
         <div class="card-action card-panel cyan lighten-3">
             <a href="/trip/{{trip.tripLink}}" class="white-text">View Trip</a>
             <i data-link="/trip/{{trip.tripLink}}" aria-label="Copy Link" title="Copy Link" class="copy small material-icons">share</i>
-            <i class="delete small material-icons text-darken-4 !important" data-type="Trip" data-key="{{trip.tripLink}}">delete</i>
+            {{#if owner}}<i class="delete small material-icons text-darken-4 !important" data-type="Trip" data-key="{{trip.tripLink}}">delete</i>{{/if}}
             {{#if trip.Private}}<i class="small material-icons text-darken-4 right">lock_outline</i>{{/if}}
         </div>
     </div>

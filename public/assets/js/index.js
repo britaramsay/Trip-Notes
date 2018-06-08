@@ -81,7 +81,7 @@ $(document).ready(() => {
 
    
 });
-
+// call this instead of form action
  $(document).on('click', '#search', function () {  
     $.post('/trip/search').then(function(data) {
         $('#trips1').html(data)

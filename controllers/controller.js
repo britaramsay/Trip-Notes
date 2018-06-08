@@ -94,7 +94,9 @@ router.get('/user/trips', (req, res) => {
                     trip.photo = findFirstPhoto(trip)
                     trip.tripLink = cryptr.encrypt(req.cookies.userId + '_' + trip.id)
                     return trip
-                }), layout: false
+                }),
+                owner: true, 
+                layout: false
             }
         )
     })
@@ -435,7 +437,14 @@ router.post('/trip/search', (req, res) => {
     
     db.Tag.findAll({
         where: {Name: {[Op.like]: ['%' + searchQuery +'%']}},
-        include: [{model: db.Trip, where: {Private: 0}, include: [{model: db.Checkin, include: [db.Photo]}]}]
+        include: [{
+            model: db.Trip, 
+            where: { Private: 0 }, 
+            include: [{
+                model: db.Checkin, 
+                include: [db.Photo]
+            }]
+        }]
     }).then(tags => {
         var tagsMatching = [];
         tags.forEach(tag => {
@@ -443,21 +452,22 @@ router.post('/trip/search', (req, res) => {
             tag.dataValues.Trips.forEach(trip => {tagsMatching.push({id: trip.dataValues.id, Title: trip.dataValues.Title, Description: trip.dataValues.Description, photo: findFirstPhoto(trip), tripLink: cryptr.encrypt(trip.dataValues.UserId + '_' + trip.dataValues.id)})})
         })
 
+        function findDuplicateTrip(array, attr, value) {
+            for(var i = 0; i < array.length; i++) {
+                if(array[i][attr] === value) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
         tagsMatching.filter(function (value, index, self) { 
-            if(trips.indexOf(value) == -1) {
+            if(findDuplicateTrip(trips, 'id', value.id) == -1){
                 trips.push(value)
             }
         })
         
-        res.render('partials/trips',
-            {
-                trips: trips.map(trip => {
-                    return trip
-                })
-                // , layout: false
-            }
-        )
-        console.log(trips)
+        res.render('searchTrips', {trips: trips, owner: false})
     })
 })
 
