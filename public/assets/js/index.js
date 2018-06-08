@@ -81,12 +81,12 @@ $(document).ready(() => {
 
    
 });
-// call this instead of form action
- $(document).on('click', '#search', function () {  
-    $.post('/trip/search').then(function(data) {
-        $('#trips1').html(data)
-    })
-})
+// // call this instead of form action
+//  $(document).on('click', '#search', function () {  
+//     $.post('/trip/search').then(function(data) {
+//         $('#trips1').html(data)
+//     })
+// })
 
 $(document).on('click', '.delete', (event) => {
     $.ajax('/' + $(event.target).attr('data-type') + '/' + $(event.target).attr('data-key'), { type: 'DELETE' }).then(function (data) {
