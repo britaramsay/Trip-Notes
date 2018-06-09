@@ -471,7 +471,7 @@ router.post('/trip/search', (req, res) => {
             }
         })
         console.log(trips)
-        res.render('searchTrips', { trips: trips })
+        res.render('searchTrips', { trips: trips, searchQuery: searchQuery })
     })
 })
 
