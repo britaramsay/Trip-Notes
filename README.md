@@ -1,3 +1,3 @@
-!["Trip Notes"](public/assets/image/logoF.png "Trip Notes")
+[!["Trip Notes"](public/assets/image/logoF.png "Trip Notes")](https://trip-notes.herokuapp.com/)
 ---
 Trip Notes lets you share their vacation experiences with the world. With Trip Notes, you can can check in to places you visit throughout your trip, upload photos and notes for each location visited, and explore new fun places by searching publicly posted trips. Whether to take notes of your memory as you go, or look for new places or hidden gems to explore, Trip Notes have you covered. 
