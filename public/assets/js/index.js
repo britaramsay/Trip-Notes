@@ -67,9 +67,7 @@ $(document).ready(() => {
     }
 
 
-    $.ajax('/trips/public', { type: 'GET' }).then(function (data) {
         // Initialize carousel
-        $('.carousel').html(data)
         $('.carousel').carousel({
             onCycleTo: function(data) {
                 // id of current slide in carousel
@@ -79,7 +77,6 @@ $(document).ready(() => {
                 $('#currentTripLink').attr('href', '/trip/'+tripInfo[0])
             }
         });
-    })
 });
 
 $(document).on('click', '.delete', (event) => {
