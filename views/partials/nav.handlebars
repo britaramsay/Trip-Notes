@@ -3,17 +3,9 @@
     <div class="nav-wrapper container">
         <a id="logo-container" href="/"> <img id="logo" src="/assets/image/logoE.png"/></a>
             
-            {{!-- search trip --}}
+          
         <ul class="right hide-on-med-and-down valign-wrapper">
-            <li>
-                <form action="/trip/search" method="post">
-                    <div class="input-field">
-                        <input id="search" type="search" name="search">
-                        <label class="label-icon" for="search"><i class="material-icons">search</i></label>
-                        <i class="material-icons">close</i>
-                    </div>
-                </form>  
-            </li>
+           
             <li>
                 <!-- Google sign in -->                    
                 <div class="g-signin2" data-onsuccess="onSignIn" data-theme="light"></div>
@@ -25,7 +17,17 @@
             <li>
                 <a href='/dashboard' id="dashboard-btn" class="brown-text text-darken-4 valign-wrapper">My Trips</a>
             </li>
-           
+                  {{!-- search trip --}}
+
+              <li>
+                <form action="/trip/search" method="post">
+                    <div class="input-field">
+                        <input id="search" type="search" name="search">
+                        <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+                        <i class="material-icons right" id="close">close</i>
+                    </div>
+                </form>  
+            </li>     
         </ul>
 
     </div>

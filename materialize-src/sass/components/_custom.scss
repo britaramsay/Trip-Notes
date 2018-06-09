@@ -119,9 +119,24 @@ main {
  
 
 .nav-wrapper form #search{
-  height: 50px;
-  margin:3px;
-  padding:5px;
+  height: 46px;
+  width: 100%;
+  background:#ffccbc!important;
+  
+}
+
+.nav-wrapper .input-field{
+  padding-top: 7px;
+}
+
+.nav-wrapper form{
+  margin: auto;
+  width: 50%;
+}
+
+.nav-wrapper form #close {
+  position: fixed;
+  right: 10px;
 }
 
 
