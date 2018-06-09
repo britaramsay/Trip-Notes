@@ -99,7 +99,7 @@ $(document).on('change', 'input[type="file"]', (event) => {
     if (file == null) {
         M.toast({ html: 'No file selected' }, 4000);
     }
-    else if (['png', 'jpg', 'jpeg'].indexOf(file.name.split('.').pop()) == -1) {
+    else if (['png', 'jpg', 'jpeg'].indexOf(file.name.split('.').pop().toLowerCase()) == -1) {
         M.toast({ html: 'Only images' }, 4000);
     }
     else {
