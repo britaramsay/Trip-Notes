@@ -3,7 +3,7 @@
         {{#if checkin.owner}}
             <i class="delete small material-icons text-darken-4" data-type="Checkin" data-key="{{checkin.checkinKey}}">delete</i>
         {{/if}}
-        {{checkin.Location.Name}}
+        <a href="https://foursquare.com/v/{{checkin.Location.ApiID}}" target="_blank">{{checkin.Location.Name}}</a>
     </h3>
     
      
