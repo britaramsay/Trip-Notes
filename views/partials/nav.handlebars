@@ -53,10 +53,24 @@
     <li><a class="waves-effect g-signin2 brown-text text-darken-4" data-onsuccess="onSignIn" data-theme="light">Sign In</a></li>
     <li><a class="waves-effect g-signout2 brown-text text-darken-4 valign-wrapper" onclick="signOut();" href="#">Sign Out</a></li>
     <li><a class="waves-effect brown-text text-darken-4 valign-wrapper" href="/dashboard" id="dashboard-btn">My Trips</a></li>
+      {{!-- <li>
+                <form action="/trip/search" method="post">
+                    <div class="input-field">
+                        <input id="search" type="search" name="search">
+                        <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+                        <i class="material-icons right" id="close">close</i>
+                    </div>
+                </form>  
+            </li>     
+       --}}
       <li class="search">
           <div class="search-wrapper">
-            <input id="search" placeholder="Search"><i class="material-icons">search</i>
-            <div class="search-results"></div>
+               <form action="/trip/search" method="post">
+                    <div class="input-field">
+            <input id="search" name="search" placeholder="Search"><i class="material-icons">search</i>
+            {{!-- <div class="search-results"></div> --}}
+            </div>
+                </form>  
           </div>
       </li>
    
